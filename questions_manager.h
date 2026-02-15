@@ -1,24 +1,23 @@
-#pragma once 
-#include<bits/stdc++.h>
+#pragma once
+#include <bits/stdc++.h>
 #include "question_vote_manager.h"
-#include "questions.h" 
+#include "questions.h"
 using namespace std;
 
 class questions_manager
 {
-    private:
-    
-    vector<questions> all_questions ;
+private:
+    vector<questions> all_questions;
+    question_vote_manager q_vote_manager;
 
-    public:
-
+public:
     questions_manager();
 
     void questions_loader();
 
     void question_writer();
 
-    bool delete_question(const int &current_user_id , const int &target_question_from_id);
+    bool delete_question(const int &current_user_id, const int &target_question_from_id);
 
     vector<questions>::const_iterator search_questions_by_id(const int &question_id) const;
 
@@ -26,5 +25,5 @@ class questions_manager
 
     int id_generator();
 
-    bool ask(const int &user_id , const string &question ,bool is_anonymous, int parent_id = -1);
+    bool ask(const int &user_id, const string &question, bool is_anonymous, int parent_id = -1);
 };

@@ -54,7 +54,7 @@ void user_manager::data_writer()
     {
         throw "ERROR , file does not exist! \n";
     }
-    
+
     for (const auto &i : all_users)
     {
         users_info_file << i.user_email_getter() << endl;

@@ -5,16 +5,14 @@ using namespace std;
 
 class user_manager
 {
-    friend class questions_manager ;
+    friend class questions_manager;
 
-    private:
-    
-    int last_id = 0 ;
+private:
+    int last_id = 0;
     vector<user_info> all_users;
 
-    public:
-    
-    user_info *current_user = nullptr ;
+public:
+    user_info *current_user = nullptr;
     user_manager();
 
     void data_loader();
@@ -24,8 +22,8 @@ class user_manager
     void login();
     void logout();
 
-    user_info* search_user(const int &id);
-    
+    user_info *search_user(const int &id);
+
     int id_generator();
 
     bool user_email_authentication(const string &email);

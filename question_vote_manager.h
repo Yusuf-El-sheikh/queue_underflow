@@ -1,5 +1,5 @@
+#pragma once
 #include <bits/stdc++.h>
-#include "questions_manager.h"
 using namespace std;
 
 class question_vote_manager
@@ -17,7 +17,7 @@ public:
     void vote_writer();
 
     void add_new_question(const int &question_id);
-    
+
     void remove_question_votes(const int &question_id);
 
     int vote_count_getter(const int &question_id);

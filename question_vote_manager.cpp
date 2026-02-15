@@ -72,7 +72,7 @@ void question_vote_manager::vote_writer()
                 question_votes_file << upvotes << endl;
             }
         }
-        
+
         question_votes_file << "#downvotes" << endl;
 
         if (all_question_downvotes.count(question_id))
@@ -84,7 +84,7 @@ void question_vote_manager::vote_writer()
         }
     }
 
-    question_votes_file.close() ;
+    question_votes_file.close();
 }
 
 void question_vote_manager::add_new_question(const int &question_id)
@@ -94,88 +94,88 @@ void question_vote_manager::add_new_question(const int &question_id)
 
 void question_vote_manager::remove_question_votes(const int &question_id)
 {
-    all_questions_ids.erase(question_id) ;
+    all_questions_ids.erase(question_id);
 
-    all_question_upvotes.erase(question_id) ;
+    all_question_upvotes.erase(question_id);
 
-    all_question_downvotes.erase(question_id) ;
+    all_question_downvotes.erase(question_id);
 }
 
 int question_vote_manager::vote_count_getter(const int &question_id)
 {
-    return all_question_upvotes[question_id].size() - all_question_downvotes[question_id].size() ;
+    return all_question_upvotes[question_id].size() - all_question_downvotes[question_id].size();
 }
 
 int question_vote_manager::upvote_count_getter(const int &question_id)
 {
-    return all_question_upvotes[question_id].size() ;
+    return all_question_upvotes[question_id].size();
 }
 
 int question_vote_manager::downvote_count_getter(const int &question_id)
 {
-    return all_question_downvotes[question_id].size() ;
+    return all_question_downvotes[question_id].size();
 }
 
 bool question_vote_manager::upvote(const int &user_id, const int &question_id)
 {
-    if(all_question_upvotes[question_id].find(user_id) != all_question_upvotes[question_id].end())
+    if (all_question_upvotes[question_id].find(user_id) != all_question_upvotes[question_id].end())
     {
-        //button toggle mechanism
-        all_question_upvotes[question_id].erase(user_id) ;
+        // button toggle mechanism
+        all_question_upvotes[question_id].erase(user_id);
 
-        return false ;
+        return false;
     }
 
-    else if(all_question_downvotes[question_id].find(user_id) != all_question_downvotes[question_id].end())
+    else if (all_question_downvotes[question_id].find(user_id) != all_question_downvotes[question_id].end())
     {
-        //button toggle mechanism
-        all_question_downvotes[question_id].erase(user_id) ;
-        all_question_upvotes[question_id].insert(user_id) ;
-        return true ;
+        // button toggle mechanism
+        all_question_downvotes[question_id].erase(user_id);
+        all_question_upvotes[question_id].insert(user_id);
+        return true;
     }
 
-    all_question_upvotes[question_id].insert(user_id) ;
-    
-    return true ;
+    all_question_upvotes[question_id].insert(user_id);
+
+    return true;
 }
 
 bool question_vote_manager::downvote(const int &user_id, const int &question_id)
 {
-    if(all_question_downvotes[question_id].find(user_id) != all_question_downvotes[question_id].end())
+    if (all_question_downvotes[question_id].find(user_id) != all_question_downvotes[question_id].end())
     {
-        //button toggle mechanism
-        all_question_downvotes[question_id].erase(user_id) ;
+        // button toggle mechanism
+        all_question_downvotes[question_id].erase(user_id);
 
-        return false ;
+        return false;
     }
 
-    else if(all_question_upvotes[question_id].find(user_id) != all_question_upvotes[question_id].end())
+    else if (all_question_upvotes[question_id].find(user_id) != all_question_upvotes[question_id].end())
     {
-        //button toggle mechanism
-        all_question_upvotes[question_id].erase(user_id) ;
-        all_question_downvotes[question_id].insert(user_id) ;
+        // button toggle mechanism
+        all_question_upvotes[question_id].erase(user_id);
+        all_question_downvotes[question_id].insert(user_id);
 
-        return true ;
+        return true;
     }
 
-    all_question_downvotes[question_id].insert(user_id) ;
-    return true ;
+    all_question_downvotes[question_id].insert(user_id);
+    return true;
 }
 
 bool question_vote_manager::has_user_upvoted(const int &user_id, const int &question_id)
 {
-    if(all_question_upvotes[question_id].find(user_id) != all_question_upvotes[question_id].end())
+    if (all_question_upvotes[question_id].find(user_id) != all_question_upvotes[question_id].end())
     {
-        return true ;
+        return true;
     }
     return false;
 }
 
 bool question_vote_manager::has_user_downvoted(const int &user_id, const int &question_id)
 {
-    if(all_question_downvotes[question_id].find(user_id) != all_question_downvotes[question_id].end())
+    if (all_question_downvotes[question_id].find(user_id) != all_question_downvotes[question_id].end())
     {
-        return true ;
+        return true;
     }
-    return false ;
+    return false;
 }

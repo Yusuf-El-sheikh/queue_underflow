@@ -94,7 +94,9 @@ bool answers_manager::delete_answer(const int &current_user_id, const int &targe
 
     if (it != all_answers.end() && it->answer_id_getter() == target_answer_id && it->from_id_getter() == current_user_id)
     {
+        a_vote_manager.remove_answer_votes(target_answer_id);
         all_answers.erase(it);
+
         cout << "Your answer was deleted successfully" << endl;
 
         return true;
@@ -110,7 +112,7 @@ bool answers_manager::delete_answer(const int &current_user_id, const int &targe
         return false;
     }
 
-    return false ;
+    return false;
 }
 
 vector<answers>::const_iterator answers_manager::search_answers_by_id(const int &answer_id) const
@@ -163,9 +165,11 @@ vector<answers> answers_manager::answers_of_question_filter(const int &question_
     return all_question_answers;
 }
 
-bool answers_manager::answer(const int &user_id , const int &question_id , const string &answer_text, bool is_anonymous)
+bool answers_manager::answer(const int &user_id, const int &question_id, const string &answer_text, bool is_anonymous)
 {
     answers new_answer;
+
+    
 
     if (answer_text.size() > 1000)
     {
@@ -178,13 +182,15 @@ bool answers_manager::answer(const int &user_id , const int &question_id , const
     new_answer.answer_id_setter(id_generator());
     new_answer.answer_text_setter(answer_text);
     new_answer.from_id_setter(user_id);
-    
 
-    auto pos = std::lower_bound(all_answers.begin(), all_answers.end(), new_answer, [](const answers &a, const answers &b) { return a.answer_id_getter() < b.answer_id_getter(); });
-    all_answers.insert(pos,new_answer);
+    a_vote_manager.add_new_answer(new_answer.answer_id_getter());
 
-    cout <<"Your answer was posted successfully ! "<<endl ; 
-    cout <<"Refresh the homepage to check your answer!" <<endl ;
+    auto pos = std::lower_bound(all_answers.begin(), all_answers.end(), new_answer, [](const answers &a, const answers &b)
+                                { return a.answer_id_getter() < b.answer_id_getter(); });
+    all_answers.insert(pos, new_answer);
 
-    return true ;
+    cout << "Your answer was posted successfully ! " << endl;
+    cout << "Refresh the homepage to check your answer!" << endl;
+
+    return true;
 }

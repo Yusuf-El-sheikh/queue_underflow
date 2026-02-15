@@ -5,7 +5,6 @@ using namespace std;
 class answers
 {
 private:
-
     int answered_question_id = -1;
     int answer_id = 0;
     int from_user_id = 0;
@@ -15,7 +14,6 @@ private:
     bool is_anonymous = false;
 
 public:
-
     answers();
 
     void from_id_setter(const int &from_id);

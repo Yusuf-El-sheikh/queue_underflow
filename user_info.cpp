@@ -2,13 +2,13 @@
 #include "user_info.h"
 using namespace std;
 
-user_info::user_info(){}
+user_info::user_info() {}
 
 bool user_info::username_setter(const string &name)
 {
     username = name;
 
-    return true ;
+    return true;
 }
 
 string user_info::username_getter() const
@@ -18,7 +18,7 @@ string user_info::username_getter() const
 
 void user_info::user_email_setter(const string &email)
 {
-    user_email = email ;
+    user_email = email;
 }
 
 string user_info::user_email_getter() const
@@ -28,7 +28,7 @@ string user_info::user_email_getter() const
 
 void user_info::user_password_setter(const string &password)
 {
-    user_password = password ;
+    user_password = password;
 }
 
 string user_info::user_password_getter() const
@@ -40,7 +40,7 @@ bool user_info::preference_setter(const bool &pref)
 {
     preference = pref;
 
-    return true ;
+    return true;
 }
 
 bool user_info::preference_getter() const

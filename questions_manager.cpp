@@ -4,7 +4,10 @@
 #include "user_manager.h"
 using namespace std;
 
-questions_manager::questions_manager() {}
+questions_manager::questions_manager() 
+{
+    questions_loader();
+}
 
 void questions_manager::questions_loader()
 {
@@ -97,7 +100,9 @@ bool questions_manager::delete_question(const int &current_user_id, const int &t
 
     if (it != all_questions.end() && it->question_id_getter() == target_question_id && it->from_id_getter() == current_user_id)
     {
+        q_vote_manager.remove_question_votes(target_question_id);
         all_questions.erase(it);
+
         cout << "Your question was deleted successfully" << endl;
 
         return true;
@@ -182,6 +187,8 @@ bool questions_manager::ask(const int &user_id, const string &user_question_text
     new_question.question_id_setter(id_generator());
     new_question.question_text_setter(user_question_text);
     new_question.from_id_setter(user_id);
+
+    q_vote_manager.add_new_question(new_question.question_id_getter()) ;
 
     auto pos = std::lower_bound(all_questions.begin(), all_questions.end(), new_question, [](const questions &a, const questions &b)
                                 { return a.question_id_getter() < b.question_id_getter(); });
