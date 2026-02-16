@@ -112,6 +112,72 @@ void main_system::handle_signup()
     pause_screen();
 }
 
+void main_system::handle_login()
+{
+    clear_screen();
+    users.login();
+    pause_screen();
+}
+
+void main_system::handle_ask_question()
+{
+    clear_screen();
+    cout << "================================================================================" << endl;
+    cout << "                              ASK A QUESTION                                    " << endl;
+    cout << "================================================================================" << endl;
+    
+    cin.ignore(); 
+    
+    cout << "Enter your question (max 1000 characters): " << endl;
+    string question_text;
+    getline(cin, question_text);
+    
+    cout << "Post anonymously? (y/n): ";
+    char anon_choice;
+    cin >> anon_choice;
+    
+    bool is_anonymous = (tolower(anon_choice) == 'y');
+    
+    questions.ask(users.current_user->user_id_getter(), question_text, is_anonymous);
+    
+    pause_screen();
+}
+
+void main_system::handle_answer_question()
+{
+    clear_screen();
+    cout << "================================================================================" << endl;
+    cout << "                            ANSWER A QUESTION                                   " << endl;
+    cout << "================================================================================" << endl;
+    
+    cout << "Enter the Question ID you want to answer: ";
+    int question_id;
+    cin >> question_id;
+    
+    auto it = questions.search_questions_by_id(question_id);
+    if (it == questions.search_questions_by_id(-1))
+    {
+        pause_screen();
+        return;
+    }
+    
+    cin.ignore(); 
+    
+    cout << "Enter your answer (max 1000 characters): " << endl;
+    string answer_text;
+    getline(cin, answer_text);
+    
+    cout << "Post anonymously? (y/n): ";
+    char anon_choice;
+    cin >> anon_choice;
+    
+    bool is_anonymous = (tolower(anon_choice) == 'y');
+    
+    answers.answer(users.current_user->user_id_getter(), question_id, answer_text, is_anonymous);
+    
+    pause_screen();
+}
+
 void main_system::save_all_data()
 {
     users.data_writer();
