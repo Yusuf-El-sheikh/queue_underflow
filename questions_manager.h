@@ -17,6 +17,8 @@ public:
 
     void question_writer();
 
+    void save_votes();
+
     bool delete_question(const int &current_user_id, const int &target_question_from_id);
 
     vector<questions>::const_iterator search_questions_by_id(const int &question_id) const;

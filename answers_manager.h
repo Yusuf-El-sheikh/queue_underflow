@@ -17,6 +17,8 @@ public:
 
     void answer_writer();
 
+    void save_votes();
+
     bool answer(const int &user_id, const int &question_id, const string &answer_text, bool is_anonymous);
 
     bool delete_answer(const int &current_user_id, const int &target_answer_id);

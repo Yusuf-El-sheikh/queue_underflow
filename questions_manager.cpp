@@ -93,6 +93,11 @@ void questions_manager::question_writer()
     questions_file.close();
 }
 
+void questions_manager::save_votes()
+{
+    q_vote_manager.vote_writer() ;
+}
+
 bool questions_manager::delete_question(const int &current_user_id, const int &target_question_id)
 {
     auto it = lower_bound(all_questions.begin(), all_questions.end(), target_question_id, [](const questions &a, const int &id)

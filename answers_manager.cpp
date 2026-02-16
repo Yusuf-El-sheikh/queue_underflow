@@ -87,6 +87,11 @@ void answers_manager::answer_writer()
     answers_file.close();
 }
 
+void answers_manager::save_votes()
+{
+    a_vote_manager.vote_writer() ;
+}
+
 bool answers_manager::delete_answer(const int &current_user_id, const int &target_answer_id)
 {
     auto it = lower_bound(all_answers.begin(), all_answers.end(), target_answer_id, [](const answers &a, const int &id)
