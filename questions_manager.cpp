@@ -4,7 +4,7 @@
 #include "user_manager.h"
 using namespace std;
 
-questions_manager::questions_manager() 
+questions_manager::questions_manager()
 {
     questions_loader();
 }
@@ -95,7 +95,7 @@ void questions_manager::question_writer()
 
 void questions_manager::save_votes()
 {
-    q_vote_manager.vote_writer() ;
+    q_vote_manager.vote_writer();
 }
 
 bool questions_manager::delete_question(const int &current_user_id, const int &target_question_id)
@@ -126,6 +126,8 @@ bool questions_manager::delete_question(const int &current_user_id, const int &t
     return false;
 }
 
+
+
 vector<questions>::const_iterator questions_manager::search_questions_by_id(const int &question_id) const
 {
     auto it = lower_bound(all_questions.begin(), all_questions.end(), question_id, [](const questions &a, const int &id)
@@ -154,6 +156,29 @@ vector<questions> questions_manager::questions_of_user_filter(const int &current
     }
 
     return all_user_questions;
+}
+
+vector<int> questions_manager::collect_all_descendants(const int &parent_id)
+{
+    vector<int> descendants;
+
+    for (const auto &question : all_questions)
+    {
+        if (question.parent_question_id_getter() == parent_id)
+        {
+            descendants.push_back(question.question_id_getter());
+
+            vector<int> child_descendants;
+
+            child_descendants = collect_all_descendants(question.question_id_getter());
+
+            descendants.insert(descendants.end()
+            , make_move_iterator(child_descendants.begin())
+            , make_move_iterator(child_descendants.end()));
+        }
+    }
+
+    return descendants;
 }
 
 int questions_manager::id_generator()
@@ -193,7 +218,7 @@ bool questions_manager::ask(const int &user_id, const string &user_question_text
     new_question.question_text_setter(user_question_text);
     new_question.from_id_setter(user_id);
 
-    q_vote_manager.add_new_question(new_question.question_id_getter()) ;
+    q_vote_manager.add_new_question(new_question.question_id_getter());
 
     auto pos = std::lower_bound(all_questions.begin(), all_questions.end(), new_question, [](const questions &a, const questions &b)
                                 { return a.question_id_getter() < b.question_id_getter(); });

@@ -25,6 +25,8 @@ public:
 
     vector<questions> questions_of_user_filter(const int &current_user_id);
 
+    vector<int> collect_all_descendants(const int &parent_id);
+
     int id_generator();
 
     bool ask(const int &user_id, const string &question, bool is_anonymous, int parent_id = -1);
