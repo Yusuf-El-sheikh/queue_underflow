@@ -9,11 +9,11 @@ class main_system
 {
 private:
 
-    user_manager users;
+    user_manager users_mgr ;
 
-    questions_manager questions;
+    questions_manager questions_mgr ;
     
-    answers_manager answers;
+    answers_manager answers_mgr ;
 
     void display_main_menu();
     void handle_login();

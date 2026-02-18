@@ -51,7 +51,7 @@ void main_system::display_user_dashboard()
     cout << "================================================================================" << endl;
     cout << "                          QUEUE UNDERFLOW DASHBOARD                             " << endl;
     cout << "================================================================================" << endl;
-    cout << "  Logged in as: " << users.current_user->username_getter() << endl;
+    cout << "  Logged in as: " << users_mgr.current_user->username_getter() << endl;
     cout << "================================================================================" << endl;
     cout << endl;
     cout << "  1. View Feed (All Questions)                                                  " << endl;
@@ -66,56 +66,56 @@ void main_system::display_user_dashboard()
     cout << endl;
     cout << "================================================================================" << endl;
     cout << "  Enter your choice: ";
-    
+
     int choice;
     cin >> choice;
-    
-    switch(choice)
+
+    switch (choice)
     {
-        case 1:
-            display_feed();
-            break;
-        case 2:
-            handle_ask_question();
-            break;
-        case 3:
-            handle_answer_question();
-            break;
-        case 4:
-            handle_view_my_questions();
-            break;
-        case 5:
-            handle_delete_question();
-            break;
-        case 6:
-            handle_delete_answer();
-            break;
-        case 7:
-            handle_vote_on_question();
-            break;
-        case 8:
-            handle_vote_on_answer();
-            break;
-        case 9:
-            users.logout();
-            break;
-        default:
-            cout << "Invalid choice! Try again." << endl;
-            pause_screen();
+    case 1:
+        display_feed();
+        break;
+    case 2:
+        handle_ask_question();
+        break;
+    case 3:
+        handle_answer_question();
+        break;
+    case 4:
+        handle_view_my_questions();
+        break;
+    case 5:
+        handle_delete_question();
+        break;
+    case 6:
+        handle_delete_answer();
+        break;
+    case 7:
+        handle_vote_on_question();
+        break;
+    case 8:
+        handle_vote_on_answer();
+        break;
+    case 9:
+        users_mgr.logout();
+        break;
+    default:
+        cout << "Invalid choice! Try again." << endl;
+        pause_screen();
     }
 }
 
 void main_system::handle_signup()
 {
     clear_screen();
-    users.sign_up();
+    users_mgr.sign_up();
     pause_screen();
 }
 
 void main_system::handle_login()
 {
     clear_screen();
-    users.login();
+    users_mgr.login();
     pause_screen();
 }
 
@@ -125,21 +125,21 @@ void main_system::handle_ask_question()
     cout << "================================================================================" << endl;
     cout << "                              ASK A QUESTION                                    " << endl;
     cout << "================================================================================" << endl;
-    
-    cin.ignore(); 
-    
+
+    cin.ignore();
+
     cout << "Enter your question (max 1000 characters): " << endl;
     string question_text;
     getline(cin, question_text);
-    
+
     cout << "Post anonymously? (y/n): ";
     char anon_choice;
     cin >> anon_choice;
-    
+
     bool is_anonymous = (tolower(anon_choice) == 'y');
-    
-    questions.ask(users.current_user->user_id_getter(), question_text, is_anonymous);
-    
+
+    questions_mgr.ask(users_mgr.current_user->user_id_getter(), question_text, is_anonymous);
+
     pause_screen();
 }
 
@@ -149,44 +149,104 @@ void main_system::handle_answer_question()
     cout << "================================================================================" << endl;
     cout << "                            ANSWER A QUESTION                                   " << endl;
     cout << "================================================================================" << endl;
-    
+
     cout << "Enter the Question ID you want to answer: ";
     int question_id;
     cin >> question_id;
-    
-    auto it = questions.search_questions_by_id(question_id);
-    if (it == questions.search_questions_by_id(-1))
+
+    auto it = questions_mgr.search_questions_by_id(question_id);
+    if (it == questions_mgr.search_questions_by_id(-1))
     {
         pause_screen();
         return;
     }
-    
-    cin.ignore(); 
-    
+
+    cin.ignore();
+
     cout << "Enter your answer (max 1000 characters): " << endl;
     string answer_text;
     getline(cin, answer_text);
-    
+
     cout << "Post anonymously? (y/n): ";
     char anon_choice;
     cin >> anon_choice;
-    
+
     bool is_anonymous = (tolower(anon_choice) == 'y');
-    
-    answers.answer(users.current_user->user_id_getter(), question_id, answer_text, is_anonymous);
-    
+
+    answers_mgr.answer(users_mgr.current_user->user_id_getter(), question_id, answer_text, is_anonymous);
+
+    pause_screen();
+}
+
+void main_system::handle_delete_question()
+{
+    clear_screen();
+    cout << "================================================================================" << endl;
+    cout << "                           DELETE MY QUESTION                                   " << endl;
+    cout << "================================================================================" << endl;
+
+    cout << "Enter the Question ID to delete: ";
+    int question_id;
+    cin >> question_id;
+
+    if (!questions_mgr.can_delete_question(users_mgr.current_user->user_id_getter(), question_id))
+    {
+        pause_screen();
+        return;
+    }
+
+    vector<int> descendants = questions_mgr.collect_all_descendants(question_id);
+    descendants.push_back(question_id);
+
+    for (int qid : descendants)
+    {
+        vector<answers> question_answers = answers_mgr.answers_of_question_filter(qid);
+        for (const auto &ans : question_answers)
+        {
+            answers_mgr.force_delete_answer(ans.answer_id_getter());
+        }
+    }
+
+    for (int qid : descendants)
+    {
+        questions_mgr.force_delete_question(qid);
+    }
+
+    cout << "Question thread deleted successfully!" << endl;
+    pause_screen();
+}
+
+void main_system::handle_delete_answer()
+{
+    clear_screen();
+    cout << "================================================================================" << endl;
+    cout << "                             DELETE MY ANSWER                                   " << endl;
+    cout << "================================================================================" << endl;
+
+    cout << "Enter the Answer ID to delete: ";
+    int answer_id;
+    cin >> answer_id;
+
+    if (!answers_mgr.can_delete_answer(users_mgr.current_user->user_id_getter(), answer_id))
+    {
+        pause_screen();
+        return;
+    }
+
+    answers_mgr.force_delete_answer(answer_id);
+    cout << "Answer deleted successfully!" << endl;
     pause_screen();
 }
 
 void main_system::save_all_data()
 {
-    users.data_writer();
+    users_mgr.data_writer();
 
-    questions.question_writer();
-    questions.save_votes();
+    questions_mgr.question_writer();
+    questions_mgr.save_votes();
 
-    answers.answer_writer();
-    answers.save_votes();
+    answers_mgr.answer_writer();
+    answers_mgr.save_votes();
 }
 
 void main_system::clear_screen()

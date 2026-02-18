@@ -21,7 +21,9 @@ public:
 
     bool answer(const int &user_id, const int &question_id, const string &answer_text, bool is_anonymous);
 
-    bool delete_answer(const int &current_user_id, const int &target_answer_id);
+    bool can_delete_answer(const int &current_user_id, const int &target_answer_id);
+
+    bool force_delete_answer(const int &answer_id);
 
     vector<answers> answers_of_question_filter(const int &question_id);
 

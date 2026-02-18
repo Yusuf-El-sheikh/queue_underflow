@@ -19,7 +19,9 @@ public:
 
     void save_votes();
 
-    bool delete_question(const int &current_user_id, const int &target_question_from_id);
+    bool can_delete_question(const int &current_user_id, const int &target_question_from_id);
+
+    bool force_delete_question(const int &question_id);
 
     vector<questions>::const_iterator search_questions_by_id(const int &question_id) const;
 

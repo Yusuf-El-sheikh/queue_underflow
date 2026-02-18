@@ -92,18 +92,13 @@ void answers_manager::save_votes()
     a_vote_manager.vote_writer() ;
 }
 
-bool answers_manager::delete_answer(const int &current_user_id, const int &target_answer_id)
+bool answers_manager::can_delete_answer(const int &current_user_id, const int &target_answer_id)
 {
     auto it = lower_bound(all_answers.begin(), all_answers.end(), target_answer_id, [](const answers &a, const int &id)
                           { return a.answer_id_getter() < id; });
 
     if (it != all_answers.end() && it->answer_id_getter() == target_answer_id && it->from_id_getter() == current_user_id)
     {
-        a_vote_manager.remove_answer_votes(target_answer_id);
-        all_answers.erase(it);
-
-        cout << "Your answer was deleted successfully" << endl;
-
         return true;
     }
     else if (it == all_answers.end() || it->answer_id_getter() != target_answer_id)
@@ -117,6 +112,21 @@ bool answers_manager::delete_answer(const int &current_user_id, const int &targe
         return false;
     }
 
+    return false;
+}
+
+bool answers_manager::force_delete_answer(const int &answer_id)
+{
+    auto it = lower_bound(all_answers.begin(), all_answers.end(), answer_id, 
+                          [](const answers &a, const int &id) { return a.answer_id_getter() < id; });
+
+    if (it != all_answers.end() && it->answer_id_getter() == answer_id)
+    {
+        a_vote_manager.remove_answer_votes(answer_id);
+        all_answers.erase(it);
+        return true;
+    }
+    
     return false;
 }
 

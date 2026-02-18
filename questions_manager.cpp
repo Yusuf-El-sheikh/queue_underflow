@@ -98,18 +98,13 @@ void questions_manager::save_votes()
     q_vote_manager.vote_writer();
 }
 
-bool questions_manager::delete_question(const int &current_user_id, const int &target_question_id)
+bool questions_manager::can_delete_question(const int &current_user_id, const int &target_question_id)
 {
     auto it = lower_bound(all_questions.begin(), all_questions.end(), target_question_id, [](const questions &a, const int &id)
                           { return a.question_id_getter() < id; });
 
     if (it != all_questions.end() && it->question_id_getter() == target_question_id && it->from_id_getter() == current_user_id)
     {
-        q_vote_manager.remove_question_votes(target_question_id);
-        all_questions.erase(it);
-
-        cout << "Your question was deleted successfully" << endl;
-
         return true;
     }
     else if (it == all_questions.end() || it->question_id_getter() != target_question_id)
@@ -126,7 +121,20 @@ bool questions_manager::delete_question(const int &current_user_id, const int &t
     return false;
 }
 
+bool questions_manager::force_delete_question(const int &question_id)
+{
+    auto it = lower_bound(all_questions.begin(), all_questions.end(), question_id, 
+                          [](const questions &a, const int &id) { return a.question_id_getter() < id; });
 
+    if (it != all_questions.end() && it->question_id_getter() == question_id)
+    {
+        q_vote_manager.remove_question_votes(question_id);
+        all_questions.erase(it);
+        return true;
+    }
+    
+    return false;
+}
 
 vector<questions>::const_iterator questions_manager::search_questions_by_id(const int &question_id) const
 {
