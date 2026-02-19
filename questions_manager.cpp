@@ -136,6 +136,16 @@ bool questions_manager::force_delete_question(const int &question_id)
     return false;
 }
 
+bool questions_manager::upvote_question(const int &user_id, const int &question_id)
+{
+    return q_vote_manager.upvote(user_id , question_id);
+}
+
+bool questions_manager::downvote_question(const int &user_id , const int &question_id)
+{
+    return q_vote_manager.downvote(user_id , question_id);
+}
+
 vector<questions>::const_iterator questions_manager::search_questions_by_id(const int &question_id) const
 {
     auto it = lower_bound(all_questions.begin(), all_questions.end(), question_id, [](const questions &a, const int &id)
@@ -189,6 +199,11 @@ vector<int> questions_manager::collect_all_descendants(const int &parent_id)
     return descendants;
 }
 
+const vector<questions>& questions_manager::get_questions() const 
+{
+    return all_questions;
+}
+
 int questions_manager::id_generator()
 {
     random_device randomizer;
@@ -207,6 +222,16 @@ int questions_manager::id_generator()
     }
 
     return question_id;
+}
+
+int questions_manager::get_upvote_count(const int &question_id)
+{
+    return q_vote_manager.upvote_count_getter(question_id);
+}
+
+int questions_manager::get_downvote_count(const int &question_id)
+{
+    return q_vote_manager.downvote_count_getter(question_id);
 }
 
 bool questions_manager::ask(const int &user_id, const string &user_question_text, bool is_anonymous, int parent_id)

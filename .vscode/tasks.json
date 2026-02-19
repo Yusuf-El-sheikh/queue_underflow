@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Queue Underflow",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-g",
+                "main.cpp",
+                "main_system.cpp",
+                "user_manager.cpp",
+                "user_info.cpp",
+                "questions_manager.cpp",
+                "questions.cpp",
+                "question_vote_manager.cpp",
+                "answers_manager.cpp",
+                "answers.cpp",
+                "answer_vote_manager.cpp",
+                "-o",
+                "queue_underflow"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Compile all source files"
+        }
+    ]
+}

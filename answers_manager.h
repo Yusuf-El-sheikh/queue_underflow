@@ -25,9 +25,15 @@ public:
 
     bool force_delete_answer(const int &answer_id);
 
+    bool upvote_answer(const int &user_id, const int &answer_id);
+
+    bool downvote_answer(const int &user_id, const int &answer_id);
+
     vector<answers> answers_of_question_filter(const int &question_id);
 
     vector<answers>::const_iterator search_answers_by_id(const int &answer_id) const;
+
+    const vector<answers>& get_answers() const;
 
     int id_generator();
 };

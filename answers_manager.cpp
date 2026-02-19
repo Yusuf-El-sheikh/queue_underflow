@@ -89,7 +89,7 @@ void answers_manager::answer_writer()
 
 void answers_manager::save_votes()
 {
-    a_vote_manager.vote_writer() ;
+    a_vote_manager.vote_writer();
 }
 
 bool answers_manager::can_delete_answer(const int &current_user_id, const int &target_answer_id)
@@ -117,8 +117,9 @@ bool answers_manager::can_delete_answer(const int &current_user_id, const int &t
 
 bool answers_manager::force_delete_answer(const int &answer_id)
 {
-    auto it = lower_bound(all_answers.begin(), all_answers.end(), answer_id, 
-                          [](const answers &a, const int &id) { return a.answer_id_getter() < id; });
+    auto it = lower_bound(all_answers.begin(), all_answers.end(), answer_id,
+                          [](const answers &a, const int &id)
+                          { return a.answer_id_getter() < id; });
 
     if (it != all_answers.end() && it->answer_id_getter() == answer_id)
     {
@@ -126,8 +127,18 @@ bool answers_manager::force_delete_answer(const int &answer_id)
         all_answers.erase(it);
         return true;
     }
-    
+
     return false;
+}
+
+bool answers_manager::upvote_answer(const int &user_id, const int &answer_id)
+{
+    return a_vote_manager.upvote(user_id, answer_id);
+}
+
+bool answers_manager::downvote_answer(const int &user_id, const int &answer_id)
+{
+    return a_vote_manager.downvote(user_id, answer_id);
 }
 
 vector<answers>::const_iterator answers_manager::search_answers_by_id(const int &answer_id) const
@@ -180,11 +191,14 @@ vector<answers> answers_manager::answers_of_question_filter(const int &question_
     return all_question_answers;
 }
 
+const vector<answers> &answers_manager::get_answers() const
+{
+    return all_answers;
+}
+
 bool answers_manager::answer(const int &user_id, const int &question_id, const string &answer_text, bool is_anonymous)
 {
     answers new_answer;
-
-    
 
     if (answer_text.size() > 1000)
     {

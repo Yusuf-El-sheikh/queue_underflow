@@ -57,7 +57,7 @@ void main_system::display_user_dashboard()
     cout << "  1. View Feed (All Questions)                                                  " << endl;
     cout << "  2. Ask a Question                                                             " << endl;
     cout << "  3. Answer a Question                                                          " << endl;
-    cout << "  4. View My Questions                                                          " << endl;
+    cout << "  4. View My Profile                                                            " << endl;
     cout << "  5. Delete My Question                                                         " << endl;
     cout << "  6. Delete My Answer                                                           " << endl;
     cout << "  7. Vote on Question                                                           " << endl;
@@ -238,6 +238,160 @@ void main_system::handle_delete_answer()
     pause_screen();
 }
 
+void main_system::handle_vote_on_question()
+{
+    clear_screen();
+    cout << "================================================================================" << endl;
+    cout << "                          VOTE ON QUESTION                                      " << endl;
+    cout << "================================================================================" << endl;
+
+    cout << "Enter Question ID: ";
+    int question_id;
+    cin >> question_id;
+
+    cout << "1. Upvote" << endl;
+    cout << "2. Downvote" << endl;
+    cout << "Choice: ";
+    int vote_choice;
+    cin >> vote_choice;
+
+    switch (vote_choice)
+    {
+    case 1:
+        questions_mgr.upvote_question(users_mgr.current_user->user_id_getter(), question_id);
+        cout << "Vote recorded!" << endl;
+        break;
+    case 2:
+        questions_mgr.downvote_question(users_mgr.current_user->user_id_getter(), question_id);
+        cout << "Vote recorded!" << endl;
+        break;
+    default:
+        cout << "Invalid choice!" << endl;
+    }
+
+    pause_screen();
+}
+
+void main_system::handle_vote_on_answer()
+{
+    clear_screen();
+    cout << "================================================================================" << endl;
+    cout << "                           VOTE ON ANSWER                                       " << endl;
+    cout << "================================================================================" << endl;
+
+    cout << "Enter Answer ID: ";
+    int answer_id;
+    cin >> answer_id;
+
+    cout << "1. Upvote" << endl;
+    cout << "2. Downvote" << endl;
+    cout << "Choice: ";
+    int vote_choice;
+    cin >> vote_choice;
+
+    switch (vote_choice)
+    {
+    case 1:
+        answers_mgr.upvote_answer(users_mgr.current_user->user_id_getter(), answer_id);
+        cout << "Vote recorded!" << endl;
+        break;
+    case 2:
+        answers_mgr.downvote_answer(users_mgr.current_user->user_id_getter(), answer_id);
+        cout << "Vote recorded!" << endl;
+        break;
+    default:
+        cout << "Invalid choice!" << endl;
+    }
+
+    pause_screen();
+}
+
+void main_system::handle_view_my_questions()
+{
+    clear_screen();
+    cout << "================================================================================" << endl;
+    cout << "                               MY PROFILE                                       " << endl;
+    cout << "================================================================================" << endl;
+    
+    vector<questions> my_questions = questions_mgr.questions_of_user_filter(users_mgr.current_user->user_id_getter());
+    
+    if (my_questions.empty())
+    {
+        cout << "You haven't asked any questions yet." << endl;
+    }
+    else
+    {
+        for (const auto &q : my_questions)
+        {
+            cout << "\n[Question ID: " << q.question_id_getter() << "]" << endl;
+            cout << q.question_text_getter() << endl;
+            cout << "Anonymous: " << (q.is_anonymous_getter() ? "Yes" : "No") << endl;
+            cout << "--------------------------------------------------------------------------------" << endl;
+        }
+    }
+    
+    pause_screen();
+}
+
+void main_system::display_feed()
+{
+    clear_screen();
+    cout << "================================================================================" << endl;
+    cout << "                            QUEUE UNDERFLOW                                     " << endl;
+    cout << "================================================================================" << endl;
+    
+    const vector<questions>& all_questions = questions_mgr.get_questions();
+    
+    if (all_questions.empty())
+    {
+        cout << "\nNo questions posted yet. Be the first to ask!" << endl;
+    }
+    else
+    {
+        cout << "\nShowing all questions:\n" << endl;
+        
+        for (const auto &q : all_questions)
+        {
+            cout << "[Question ID: " << q.question_id_getter() << "]" << endl;
+            
+            if (q.is_anonymous_getter())
+            {
+                cout << "By: Anonymous" << endl;
+            }
+            else
+            {
+                user_info* author = users_mgr.search_user(q.from_id_getter());
+                if (author != nullptr)
+                {
+                    cout << "By: " << author->username_getter() << endl;
+                }
+            }
+            
+            cout << "Question: " << q.question_text_getter() << endl;
+            cout << "Upvotes: " << questions_mgr.get_upvote_count(q.question_id_getter()) 
+                 << " | Downvotes: " << questions_mgr.get_downvote_count(q.question_id_getter()) << endl;
+            cout << "--------------------------------------------------------------------------------" << endl;
+        }
+    }
+    
+    pause_screen();
+}
+
+void main_system::run()
+{
+    while (true)
+    {
+        if (users_mgr.current_user == nullptr) 
+        {
+            display_main_menu();
+        }
+        else 
+        {
+            display_user_dashboard();
+        }
+    }
+}
+
 void main_system::save_all_data()
 {
     users_mgr.data_writer();
@@ -260,4 +414,10 @@ void main_system::pause_screen()
 
     cin.ignore();
     cin.get();
+}
+
+main_system::~main_system()
+{
+    save_all_data();
+    cout << "System shutdown. All data saved." << endl;
 }
