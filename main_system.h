@@ -40,6 +40,8 @@ public:
 
     main_system();
 
+    bool get_valid_input(int &value);
+
     void run();
 
     ~main_system();

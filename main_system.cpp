@@ -4,6 +4,19 @@ using namespace std;
 
 main_system::main_system() {}
 
+bool main_system::get_valid_input(int &value)
+{
+    if(cin >> value)
+    {
+        return true ;
+    }
+
+    cin.clear();
+    cin.ignore(10000 , '\n');
+
+    return false ;
+}
+
 void main_system::display_main_menu()
 {
     clear_screen();
@@ -24,8 +37,11 @@ void main_system::display_main_menu()
     cout << "================================================================================" << endl;
 
     int choice;
-    cin >> choice;
 
+    while(!get_valid_input(choice))
+    {
+        cout << "Invalid input , please try again !" << endl;
+    }
     switch (choice)
     {
     case 1:
@@ -40,7 +56,7 @@ void main_system::display_main_menu()
         exit(0);
         break;
     default:
-        cout << "Invalid choice! Try again." << endl;
+        cout << "Invalid choice , pick 1 , 2 , 3" << endl ;
         pause_screen();
     }
 }
@@ -68,7 +84,12 @@ void main_system::display_user_dashboard()
     cout << "  Enter your choice: ";
 
     int choice;
-    cin >> choice;
+    
+    while(!get_valid_input(choice))
+    {
+        cout << "  Invalid input , please try again !" << endl;
+        cout << "  Enter your choice: ";
+    }
 
     switch (choice)
     {
@@ -152,7 +173,11 @@ void main_system::handle_answer_question()
 
     cout << "Enter the Question ID you want to answer: ";
     int question_id;
-    cin >> question_id;
+    
+    while(!get_valid_input(question_id))
+    {
+        cout << "Invalid input , please try again !" << endl;
+    }
 
     auto it = questions_mgr.search_questions_by_id(question_id);
     if (it == questions_mgr.search_questions_by_id(-1))
@@ -187,7 +212,11 @@ void main_system::handle_delete_question()
 
     cout << "Enter the Question ID to delete: ";
     int question_id;
-    cin >> question_id;
+    
+    while(!get_valid_input(question_id))
+    {
+        cout << "Invalid input , please try again !" << endl;
+    }
 
     if (!questions_mgr.can_delete_question(users_mgr.current_user->user_id_getter(), question_id))
     {
@@ -225,7 +254,11 @@ void main_system::handle_delete_answer()
 
     cout << "Enter the Answer ID to delete: ";
     int answer_id;
-    cin >> answer_id;
+    
+    while(!get_valid_input(answer_id))
+    {
+        cout << "Invalid input , please try again !" << endl;
+    }
 
     if (!answers_mgr.can_delete_answer(users_mgr.current_user->user_id_getter(), answer_id))
     {
@@ -247,13 +280,21 @@ void main_system::handle_vote_on_question()
 
     cout << "Enter Question ID: ";
     int question_id;
-    cin >> question_id;
+    
+    while(!get_valid_input(question_id))
+    {
+        cout << "Invalid input , please try again !" << endl;
+    }
 
     cout << "1. Upvote" << endl;
     cout << "2. Downvote" << endl;
     cout << "Choice: ";
     int vote_choice;
-    cin >> vote_choice;
+
+    while(!get_valid_input(vote_choice))
+    {
+        cout << "Invalid input , please try again !" << endl;
+    }
 
     switch (vote_choice)
     {
@@ -281,13 +322,20 @@ void main_system::handle_vote_on_answer()
 
     cout << "Enter Answer ID: ";
     int answer_id;
-    cin >> answer_id;
+    while(!get_valid_input(answer_id))
+    {
+        cout << "Invalid input , please try again !" << endl;
+    }
 
     cout << "1. Upvote" << endl;
     cout << "2. Downvote" << endl;
     cout << "Choice: ";
+    
     int vote_choice;
-    cin >> vote_choice;
+    while(!get_valid_input(vote_choice))
+    {
+        cout << "Invalid input , please try again !" << endl;
+    }
 
     switch (vote_choice)
     {
