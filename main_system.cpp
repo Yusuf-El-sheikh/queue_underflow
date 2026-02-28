@@ -157,9 +157,26 @@ void main_system::handle_ask_question()
     char anon_choice;
     cin >> anon_choice;
 
-    bool is_anonymous = (tolower(anon_choice) == 'y');
+    bool is_anonymous ;
+    if (tolower(anon_choice) == 'y')
+    {
+        is_anonymous = true;
+    }
+    else if (tolower(anon_choice) == 'n')
+    {
+        is_anonymous = false;
+    }
+    else
+    {
+        while( tolower(anon_choice) != 'y' && tolower(anon_choice) != 'n')
+        {
+            cout << "Invalid input , please enter y or n !" << endl;
+            cout << "Post anonymously? (y/n): ";
+            cin >> anon_choice;
+        }
+    }
 
-    questions_mgr.ask(users_mgr.current_user->user_id_getter(), question_text, is_anonymous);
+    questions_mgr.ask(users_mgr.current_user->user_id_getter(), question_text, is_anonymous , -1);
 
     pause_screen();
 }
