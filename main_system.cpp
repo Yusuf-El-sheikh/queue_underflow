@@ -199,6 +199,7 @@ void main_system::handle_answer_question()
     auto it = questions_mgr.search_questions_by_id(question_id);
     if (it == questions_mgr.search_questions_by_id(-1))
     {
+        cout << "Question with the given ID does not exist!" << endl;
         pause_screen();
         return;
     }

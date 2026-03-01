@@ -54,6 +54,7 @@ void answers_manager::answers_loader()
             answers_file.get(next_char);
             answers_text_lines += next_char;
         }
+        answers_file.ignore();
         answer.answer_text_setter(answers_text_lines);
         all_answers.push_back(answer);
         answers_text_lines = "";
@@ -81,7 +82,7 @@ void answers_manager::answer_writer()
         answers_file << answer.from_id_getter() << "\n";
         answers_file << answer.answer_text_getter().size() << "\n";
         answers_file << (answer.is_anonymous_getter() ? "1" : "0") << "\n";
-        answers_file << answer.answer_text_getter();
+        answers_file << answer.answer_text_getter() << "\n";
     }
 
     answers_file.close();
@@ -148,7 +149,6 @@ vector<answers>::const_iterator answers_manager::search_answers_by_id(const int 
 
     if (it == all_answers.end() || it->answer_id_getter() != answer_id)
     {
-        cout << "False answer id , this answer does not exist" << endl;
         return all_answers.end();
     }
 

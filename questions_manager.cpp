@@ -59,6 +59,7 @@ void questions_manager::questions_loader()
             questions_file.get(next_char);
             questions_lines_of_text += next_char;
         }
+        questions_file.ignore();
         question.question_text_setter(questions_lines_of_text);
         all_questions.push_back(question);
         questions_lines_of_text = "";
@@ -87,7 +88,7 @@ void questions_manager::question_writer()
         questions_file << (question.is_anonymous_getter() ? "1" : "0") << "\n";
         questions_file << (question.is_answered_getter() ? "1" : "0") << "\n";
         questions_file << question.question_text_getter().size() << "\n";
-        questions_file << question.question_text_getter();
+        questions_file << question.question_text_getter() << "\n";
     }
 
     questions_file.close();
@@ -153,7 +154,6 @@ vector<questions>::const_iterator questions_manager::search_questions_by_id(cons
 
     if (it == all_questions.end() || it->question_id_getter() != question_id)
     {
-        cout << "False question id , this question does not exist" << endl;
         return all_questions.end();
     }
 
