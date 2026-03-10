@@ -20,6 +20,12 @@ int main()
         cin.get();
         return 1;
     }
+    catch (const exception& e)  
+    {
+        cout << "Standard exception: " << e.what() << endl;
+        cin.get();
+        return 1;
+    }
     catch (...)
     {
         cout << "Unknown error occurred!" << endl;

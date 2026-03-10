@@ -6,15 +6,15 @@ main_system::main_system() {}
 
 bool main_system::get_valid_input(int &value)
 {
-    if(cin >> value)
+    if (cin >> value)
     {
-        return true ;
+        return true;
     }
 
     cin.clear();
-    cin.ignore(10000 , '\n');
+    cin.ignore(10000, '\n');
 
-    return false ;
+    return false;
 }
 
 void main_system::display_main_menu()
@@ -38,7 +38,7 @@ void main_system::display_main_menu()
 
     int choice;
 
-    while(!get_valid_input(choice))
+    while (!get_valid_input(choice))
     {
         cout << "Invalid input , please try again !" << endl;
     }
@@ -56,7 +56,7 @@ void main_system::display_main_menu()
         exit(0);
         break;
     default:
-        cout << "Invalid choice , pick 1 , 2 , 3" << endl ;
+        cout << "Invalid choice , pick 1 , 2 , 3" << endl;
         pause_screen();
     }
 }
@@ -84,8 +84,8 @@ void main_system::display_user_dashboard()
     cout << "  Enter your choice: ";
 
     int choice;
-    
-    while(!get_valid_input(choice))
+
+    while (!get_valid_input(choice))
     {
         cout << "  Invalid input , please try again !" << endl;
         cout << "  Enter your choice: ";
@@ -157,7 +157,7 @@ void main_system::handle_ask_question()
     char anon_choice;
     cin >> anon_choice;
 
-    bool is_anonymous ;
+    bool is_anonymous;
     if (tolower(anon_choice) == 'y')
     {
         is_anonymous = true;
@@ -168,7 +168,7 @@ void main_system::handle_ask_question()
     }
     else
     {
-        while( tolower(anon_choice) != 'y' && tolower(anon_choice) != 'n')
+        while (tolower(anon_choice) != 'y' && tolower(anon_choice) != 'n')
         {
             cout << "Invalid input , please enter y or n !" << endl;
             cout << "Post anonymously? (y/n): ";
@@ -176,7 +176,7 @@ void main_system::handle_ask_question()
         }
     }
 
-    questions_mgr.ask(users_mgr.current_user->user_id_getter(), question_text, is_anonymous , -1);
+    questions_mgr.ask(users_mgr.current_user->user_id_getter(), question_text, is_anonymous, -1);
 
     pause_screen();
 }
@@ -190,14 +190,15 @@ void main_system::handle_answer_question()
 
     cout << "Enter the Question ID you want to answer: ";
     int question_id;
-    
-    while(!get_valid_input(question_id))
+
+    while (!get_valid_input(question_id))
     {
         cout << "Invalid input , please try again !" << endl;
     }
 
     auto it = questions_mgr.search_questions_by_id(question_id);
-    if (it == questions_mgr.search_questions_by_id(-1))
+
+    if (it == questions_mgr.get_questions().end())
     {
         cout << "Question with the given ID does not exist!" << endl;
         pause_screen();
@@ -230,8 +231,8 @@ void main_system::handle_delete_question()
 
     cout << "Enter the Question ID to delete: ";
     int question_id;
-    
-    while(!get_valid_input(question_id))
+
+    while (!get_valid_input(question_id))
     {
         cout << "Invalid input , please try again !" << endl;
     }
@@ -272,8 +273,8 @@ void main_system::handle_delete_answer()
 
     cout << "Enter the Answer ID to delete: ";
     int answer_id;
-    
-    while(!get_valid_input(answer_id))
+
+    while (!get_valid_input(answer_id))
     {
         cout << "Invalid input , please try again !" << endl;
     }
@@ -298,8 +299,8 @@ void main_system::handle_vote_on_question()
 
     cout << "Enter Question ID: ";
     int question_id;
-    
-    while(!get_valid_input(question_id))
+
+    while (!get_valid_input(question_id))
     {
         cout << "Invalid input , please try again !" << endl;
     }
@@ -309,7 +310,7 @@ void main_system::handle_vote_on_question()
     cout << "Choice: ";
     int vote_choice;
 
-    while(!get_valid_input(vote_choice))
+    while (!get_valid_input(vote_choice))
     {
         cout << "Invalid input , please try again !" << endl;
     }
@@ -340,7 +341,7 @@ void main_system::handle_vote_on_answer()
 
     cout << "Enter Answer ID: ";
     int answer_id;
-    while(!get_valid_input(answer_id))
+    while (!get_valid_input(answer_id))
     {
         cout << "Invalid input , please try again !" << endl;
     }
@@ -348,9 +349,9 @@ void main_system::handle_vote_on_answer()
     cout << "1. Upvote" << endl;
     cout << "2. Downvote" << endl;
     cout << "Choice: ";
-    
+
     int vote_choice;
-    while(!get_valid_input(vote_choice))
+    while (!get_valid_input(vote_choice))
     {
         cout << "Invalid input , please try again !" << endl;
     }
@@ -378,9 +379,9 @@ void main_system::handle_view_my_questions()
     cout << "================================================================================" << endl;
     cout << "                               MY PROFILE                                       " << endl;
     cout << "================================================================================" << endl;
-    
+
     vector<questions> my_questions = questions_mgr.questions_of_user_filter(users_mgr.current_user->user_id_getter());
-    
+
     if (my_questions.empty())
     {
         cout << "You haven't asked any questions yet." << endl;
@@ -395,7 +396,7 @@ void main_system::handle_view_my_questions()
             cout << "--------------------------------------------------------------------------------" << endl;
         }
     }
-    
+
     pause_screen();
 }
 
@@ -405,41 +406,43 @@ void main_system::display_feed()
     cout << "================================================================================" << endl;
     cout << "                            QUEUE UNDERFLOW                                     " << endl;
     cout << "================================================================================" << endl;
-    
-    const vector<questions>& all_questions = questions_mgr.get_questions();
-    
+
+    const vector<questions> &all_questions = questions_mgr.get_questions();
+    const vector<answers> &all_answers = answers_mgr.get_answers();
+
     if (all_questions.empty())
     {
         cout << "\nNo questions posted yet. Be the first to ask!" << endl;
     }
     else
     {
-        cout << "\nShowing all questions:\n" << endl;
-        
         for (const auto &q : all_questions)
         {
-            cout << "[Question ID: " << q.question_id_getter() << "]" << endl;
-            
+            cout << "[ Question ID : " << q.question_id_getter() << " ]" << endl;
+
             if (q.is_anonymous_getter())
             {
-                cout << "By: Anonymous" << endl;
+                cout << "By : Anonymous" << endl
+                     << endl;
             }
             else
             {
-                user_info* author = users_mgr.search_user(q.from_id_getter());
+                user_info *author = users_mgr.search_user(q.from_id_getter());
                 if (author != nullptr)
                 {
-                    cout << "By: " << author->username_getter() << endl;
+                    cout << "By: " << author->username_getter() << endl
+                         << endl;
                 }
             }
-            
-            cout << "Question: " << q.question_text_getter() << endl;
-            cout << "Upvotes: " << questions_mgr.get_upvote_count(q.question_id_getter()) 
+
+            cout << "Question: " << q.question_text_getter() << endl
+                 << endl;
+            cout << "Upvotes: " << questions_mgr.get_upvote_count(q.question_id_getter())
                  << " | Downvotes: " << questions_mgr.get_downvote_count(q.question_id_getter()) << endl;
             cout << "--------------------------------------------------------------------------------" << endl;
         }
     }
-    
+
     pause_screen();
 }
 
@@ -447,11 +450,11 @@ void main_system::run()
 {
     while (true)
     {
-        if (users_mgr.current_user == nullptr) 
+        if (users_mgr.current_user == nullptr)
         {
             display_main_menu();
         }
-        else 
+        else
         {
             display_user_dashboard();
         }

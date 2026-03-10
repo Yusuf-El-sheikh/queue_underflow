@@ -56,12 +56,18 @@ void answers_manager::answers_loader()
         }
         answers_file.ignore();
         answer.answer_text_setter(answers_text_lines);
+
         all_answers.push_back(answer);
+        answers_by_question_id.push_back(answer); // for the sake of search speed
+
         answers_text_lines = "";
     }
 
     sort(all_answers.begin(), all_answers.end(), [](const answers &a, const answers &b) -> bool
          { return a.answer_id_getter() < b.answer_id_getter(); });
+
+    sort(answers_by_question_id.begin(), answers_by_question_id.end(), [](const answers &a, const answers &b) -> bool
+         { return a.answered_question_id_getter() < b.answered_question_id_getter(); });
 
     answers_file.close();
 }
@@ -124,8 +130,25 @@ bool answers_manager::force_delete_answer(const int &answer_id)
 
     if (it != all_answers.end() && it->answer_id_getter() == answer_id)
     {
+
+        const int target_answer_id = it->answer_id_getter();
+        const int target_answer_question_id = it->answered_question_id_getter();
+
+        auto it2 = lower_bound(answers_by_question_id.begin(), answers_by_question_id.end(), target_answer_question_id, [](const answers &a, const int &id)
+                               { return a.answered_question_id_getter() < id; });
+
+        while (it2 != answers_by_question_id.end() && it2->answered_question_id_getter() == target_answer_question_id)
+        {
+            if (it2->answer_id_getter() == target_answer_id)
+            {
+                answers_by_question_id.erase(it2);
+                break;
+            }
+            it2++;
+        }
         a_vote_manager.remove_answer_votes(answer_id);
         all_answers.erase(it);
+
         return true;
     }
 
@@ -177,18 +200,22 @@ int answers_manager::id_generator()
 
 vector<answers> answers_manager::answers_of_question_filter(const int &question_id)
 {
-    vector<answers> all_question_answers;
+    vector<answers> result;
 
-    for (const auto &i : all_answers)
+    auto it = lower_bound(answers_by_question_id.begin(),
+                          answers_by_question_id.end(),
+                          question_id,
+                          [](const answers &a, const int &qid)
+                          { return a.answered_question_id_getter() < qid; });
+
+    while (it != answers_by_question_id.end() &&
+           it->answered_question_id_getter() == question_id)
     {
-
-        if (i.answered_question_id_getter() == question_id)
-        {
-            all_question_answers.push_back(i);
-        }
+        result.push_back(*it);
+        ++it;
     }
 
-    return all_question_answers;
+    return result;
 }
 
 const vector<answers> &answers_manager::get_answers() const
@@ -216,7 +243,12 @@ bool answers_manager::answer(const int &user_id, const int &question_id, const s
 
     auto pos = std::lower_bound(all_answers.begin(), all_answers.end(), new_answer, [](const answers &a, const answers &b)
                                 { return a.answer_id_getter() < b.answer_id_getter(); });
+
+    auto pos2 = std::lower_bound(answers_by_question_id.begin(), answers_by_question_id.end(), new_answer, [](const answers &a, const answers &b)
+                                 { return a.answered_question_id_getter() < b.answered_question_id_getter(); });
+
     all_answers.insert(pos, new_answer);
+    answers_by_question_id.insert(pos2, new_answer);
 
     cout << "Your answer was posted successfully ! " << endl;
     cout << "Refresh the homepage to check your answer!" << endl;

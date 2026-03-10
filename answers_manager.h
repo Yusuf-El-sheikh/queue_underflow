@@ -7,7 +7,8 @@ using namespace std;
 class answers_manager
 {
 private:
-    vector<answers> all_answers;
+    vector<answers> answers_by_question_id; // sorted by question id
+    vector<answers> all_answers;            // sorted by answer id
     answer_vote_manager a_vote_manager;
 
 public:
@@ -33,7 +34,7 @@ public:
 
     vector<answers>::const_iterator search_answers_by_id(const int &answer_id) const;
 
-    const vector<answers>& get_answers() const;
+    const vector<answers> &get_answers() const;
 
     int id_generator();
 };
