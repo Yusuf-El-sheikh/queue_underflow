@@ -13,7 +13,7 @@ void answers_manager::answers_loader()
 {
     answers answer;
 
-    fstream answers_file("answers_file");
+    fstream answers_file("Data\\answers_file");
 
     if (!answers_file.is_open())
     {
@@ -74,7 +74,7 @@ void answers_manager::answers_loader()
 
 void answers_manager::answer_writer()
 {
-    fstream answers_file("answers_file", ios::out);
+    fstream answers_file("Data\\answers_file", ios::out);
 
     if (!answers_file.is_open())
     {
@@ -196,6 +196,16 @@ int answers_manager::id_generator()
     }
 
     return answer_id;
+}
+
+int answers_manager::get_upvote_count(const int &answer_id) 
+{
+    return a_vote_manager.upvote_count_getter(answer_id);
+}
+
+int answers_manager::get_downvote_count(const int &answer_id) 
+{
+    return a_vote_manager.downvote_count_getter(answer_id);
 }
 
 vector<answers> answers_manager::answers_of_question_filter(const int &question_id)

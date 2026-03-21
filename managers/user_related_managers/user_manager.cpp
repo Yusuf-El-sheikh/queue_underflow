@@ -15,7 +15,7 @@ void user_manager::data_loader()
     string username_of_user;
     string preference_of_user;
 
-    fstream users_info_file("users_info_file");
+    fstream users_info_file("Data\\users_info_file");
 
     if (!users_info_file.is_open())
     {
@@ -48,7 +48,7 @@ void user_manager::data_loader()
 
 void user_manager::data_writer()
 {
-    fstream users_info_file("users_info_file", ios::out);
+    fstream users_info_file("Data\\users_info_file", ios::out);
 
     if (!users_info_file.is_open())
     {

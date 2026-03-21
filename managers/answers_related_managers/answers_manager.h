@@ -37,4 +37,9 @@ public:
     const vector<answers> &get_answers() const;
 
     int id_generator();
+
+    int get_upvote_count(const int &answer_id) ;
+
+    int get_downvote_count(const int &answer_id) ;
+     
 };

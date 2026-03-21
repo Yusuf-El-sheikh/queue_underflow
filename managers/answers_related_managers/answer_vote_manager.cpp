@@ -14,7 +14,7 @@ void answer_vote_manager::vote_loader()
     int answer_id;
     int user_id;
 
-    fstream answer_votes_file("answer_votes_file");
+    fstream answer_votes_file("Data\\answer_votes_file");
 
     if (!answer_votes_file.is_open())
     {
@@ -55,7 +55,7 @@ void answer_vote_manager::vote_loader()
 
 void answer_vote_manager::vote_writer()
 {
-    fstream answer_votes_file("answer_votes_file", ios::out);
+    fstream answer_votes_file("Data\\answer_votes_file", ios::out);
 
     if (!answer_votes_file.is_open())
     {

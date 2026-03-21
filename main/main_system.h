@@ -24,6 +24,7 @@ private:
 
     void handle_ask_question();
     void handle_view_my_questions();
+    void handle_question_with_comment_section();
     void handle_delete_question();
     void handle_vote_on_question();
 

@@ -71,14 +71,15 @@ void main_system::display_user_dashboard()
     cout << "================================================================================" << endl;
     cout << endl;
     cout << "  1. View Feed (All Questions)                                                  " << endl;
-    cout << "  2. Ask a Question                                                             " << endl;
-    cout << "  3. Answer a Question                                                          " << endl;
-    cout << "  4. View My Profile                                                            " << endl;
-    cout << "  5. Delete My Question                                                         " << endl;
-    cout << "  6. Delete My Answer                                                           " << endl;
-    cout << "  7. Vote on Question                                                           " << endl;
-    cout << "  8. Vote on Answer                                                             " << endl;
-    cout << "  9. Logout                                                                     " << endl;
+    cout << "  2. View Comment Section                                                       " << endl;
+    cout << "  3. Ask a Question                                                             " << endl;
+    cout << "  4. Answer a Question                                                          " << endl;
+    cout << "  5. View My Profile                                                            " << endl;
+    cout << "  6. Delete My Question                                                         " << endl;
+    cout << "  7. Delete My Answer                                                           " << endl;
+    cout << "  8. Vote on Question                                                           " << endl;
+    cout << "  9. Vote on Answer                                                             " << endl;
+    cout << "  10. Logout                                                                    " << endl;
     cout << endl;
     cout << "================================================================================" << endl;
     cout << "  Enter your choice: ";
@@ -97,27 +98,30 @@ void main_system::display_user_dashboard()
         display_feed();
         break;
     case 2:
-        handle_ask_question();
+        handle_question_with_comment_section();
         break;
     case 3:
-        handle_answer_question();
+        handle_ask_question();
         break;
     case 4:
-        handle_view_my_questions();
+        handle_answer_question();
         break;
     case 5:
-        handle_delete_question();
+        handle_view_my_questions();
         break;
     case 6:
-        handle_delete_answer();
+        handle_delete_question();
         break;
     case 7:
-        handle_vote_on_question();
+        handle_delete_answer();
         break;
     case 8:
-        handle_vote_on_answer();
+        handle_vote_on_question();
         break;
     case 9:
+        handle_vote_on_answer();
+        break;
+    case 10:
         users_mgr.logout();
         break;
     default:
@@ -177,6 +181,98 @@ void main_system::handle_ask_question()
     }
 
     questions_mgr.ask(users_mgr.current_user->user_id_getter(), question_text, is_anonymous, -1);
+
+    pause_screen();
+}
+
+void main_system::handle_question_with_comment_section()
+{
+    clear_screen();
+
+    cout << "Enter the Question ID : ";
+
+    int question_id;
+
+    while (!get_valid_input(question_id))
+    {
+        cout << "Invalid input , please try again !" << endl;
+    }
+
+    auto it = questions_mgr.search_questions_by_id(question_id);
+
+    if (it == questions_mgr.get_questions().end())
+    {
+        cout << "Question with the given ID does not exist!" << endl;
+        pause_screen();
+        return;
+    }
+
+    clear_screen();
+    cout << "================================================================================" << endl;
+    cout << "                              COMMENT SECTION                                   " << endl;
+    cout << "================================================================================" << endl;
+
+    cout << "[ Question ID : " << it->question_id_getter() << " ]" << endl;
+
+    if (it->is_anonymous_getter())
+    {
+        cout << "By : Anonymous" << endl
+             << endl;
+    }
+    else
+    {
+        user_info *author = users_mgr.search_user(it->from_id_getter());
+        if (author != nullptr)
+        {
+            cout << "By: " << author->username_getter() << endl
+                 << endl;
+        }
+    }
+
+    vector<answers> question_answers = answers_mgr.answers_of_question_filter(it->question_id_getter());
+
+    cout << "Question: " << it->question_text_getter() << endl
+         << endl;
+    cout << "Upvotes: " << questions_mgr.get_upvote_count(it->question_id_getter())
+         << " | Downvotes: " << questions_mgr.get_downvote_count(it->question_id_getter()) << " | " << question_answers.size() << " Comments" << endl;
+    cout << "--------------------------------------------------------------------------------" << endl;
+
+    if (question_answers.empty())
+    {
+        cout << "\nNo answers yet. Be the first to answer!" << endl;
+    }
+    else
+    {
+        cout << "                             === ANSWERS ===                                  " << endl
+             << "--------------------------------------------------------------------------------"
+             << endl;
+
+        for (const auto &ans : question_answers)
+        {
+            cout << "[Answer ID: " << ans.answer_id_getter() << "]" << endl;
+
+            if (ans.is_anonymous_getter())
+            {
+                cout << "By: Anonymous" << endl
+                     << endl;
+            }
+            else
+            {
+                user_info *answer_author = users_mgr.search_user(ans.from_id_getter());
+                if (answer_author != nullptr)
+                {
+                    cout << "By: " << answer_author->username_getter() << endl
+                         << endl;
+                }
+            }
+
+            cout << ans.answer_text_getter() << endl
+                 << endl;
+            cout << "Upvotes: " << answers_mgr.get_upvote_count(ans.answer_id_getter())
+                 << " | Downvotes: " << answers_mgr.get_downvote_count(ans.answer_id_getter()) << endl;
+            cout << "--------------------------------------------------------------------------------" << endl;
+        }
+    }
 
     pause_screen();
 }
@@ -438,7 +534,7 @@ void main_system::display_feed()
             cout << "Question: " << q.question_text_getter() << endl
                  << endl;
             cout << "Upvotes: " << questions_mgr.get_upvote_count(q.question_id_getter())
-                 << " | Downvotes: " << questions_mgr.get_downvote_count(q.question_id_getter()) << endl;
+                 << " | Downvotes: " << questions_mgr.get_downvote_count(q.question_id_getter()) << " | " << answers_mgr.answers_of_question_filter(q.question_id_getter()).size() << " Comments" << endl;
             cout << "--------------------------------------------------------------------------------" << endl;
         }
     }

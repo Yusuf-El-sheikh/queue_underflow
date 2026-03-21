@@ -13,7 +13,7 @@ void questions_manager::questions_loader()
 {
     questions question;
 
-    fstream questions_file("questions_file");
+    fstream questions_file("Data\\questions_file");
 
     if (!questions_file.is_open())
     {
@@ -73,7 +73,7 @@ void questions_manager::questions_loader()
 
 void questions_manager::question_writer()
 {
-    fstream questions_file("questions_file", ios::out);
+    fstream questions_file("Data\\questions_file", ios::out);
 
     if (!questions_file.is_open())
     {
