@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "main_system.h"
+#include "../headers/main_system.h"
 using namespace std;
 
 int main()

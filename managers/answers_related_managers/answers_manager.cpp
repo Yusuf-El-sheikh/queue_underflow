@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
-#include "answer_vote_manager.h"
-#include "answers_manager.h"
-#include "answers.h"
+#include "../../headers/answer_vote_manager.h"
+#include "../../headers/answers_manager.h"
+#include "../../headers/answers.h"
 using namespace std;
 
 answers_manager::answers_manager()

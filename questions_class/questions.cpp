@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "questions.h"
+#include "../headers/questions.h"
 using namespace std;
 
 questions::questions() {}

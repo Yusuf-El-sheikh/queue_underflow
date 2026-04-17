@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "question_vote_manager.h"
+#include "../../headers/question_vote_manager.h"
 using namespace std;
 
 question_vote_manager::question_vote_manager()

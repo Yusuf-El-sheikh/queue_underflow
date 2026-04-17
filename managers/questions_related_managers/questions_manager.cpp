@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
-#include "question_vote_manager.h"
-#include "questions_manager.h"
-#include "user_manager.h"
+#include "../../headers/question_vote_manager.h"
+#include "../../headers/questions_manager.h"
+#include "../../headers/user_manager.h"
 using namespace std;
 
 questions_manager::questions_manager()
