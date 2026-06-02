@@ -1,35 +1,54 @@
 #pragma once
-#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
 using namespace std;
 
 class user_info
 {
-    friend class user_manager;
+    /*
+    this class will only be used as a container made to hold data retrived by the database
+    instead of havin a dedicated logic for file handeling.
+
+    this class is connected to user_manager class so before making any changes keep it in mind
+    that u gotta make sure your changes allign with the user_manager class
+    */
 
 private:
-    int user_id = 0;
+    int user_id ;
 
-    string user_password = "";
-    string user_email = "";
-    string username = "";
-
-    bool preference = false;
+    string user_password ;
+    string user_email ;
+    string username ;
 
 public:
-    user_info(); /*default constructor as any logic here would be redundant in case of one parameter failure*/
+    /*
+    there will be no setters since it will be handeled by the Dao constructor
 
-    bool username_setter(const string &name);
+    the passwords will have no getter, the Dao handles comparison at the database level
+    */
+
+    user_info(int id, const string& email, const string& password, const string& username);
+
     string username_getter() const;
 
-    void user_email_setter(const string &email);
     string user_email_getter() const;
 
-    void user_password_setter(const string &password);
-    string user_password_getter() const;
-
-    bool user_id_setter(const int &id);
     int user_id_getter() const;
 
-    bool preference_setter(const bool &pref);
-    bool preference_getter() const;
+    /*operators overloading
+    here operators will be overloaded to make it simpler for filtering and search functions to
+    compare data instead of making lambdas in every single one of them as a comparator
+    */
+
+    bool operator<(const user_info &other) const;
+
+    bool operator==(const user_info &other) const;
 };
+
+/*
+the output stream operator overload function shouldnt be a member function
+meaning it shouldnt be a part of any class since the function itself belong to the ostream class which
+we wont modify so we will keep it outside of this class  
+*/
+
+ostream& operator<<(ostream &os, const user_info &others);
