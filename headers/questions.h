@@ -1,9 +1,12 @@
 #pragma once
 #include <iostream>
 #include <string>
+
+#include "post.h"
+
 using namespace std;
 
-class questions
+class questions : public post
 {
     /*
    this class will only be used as a container made to hold data retrived by the database
@@ -15,12 +18,7 @@ class questions
 
 private:
     int parent_question_id;
-    int question_id;
-    int from_user_id;
 
-    string question_text;
-
-    bool is_anonymous;
     bool is_answered;
 
 public:
@@ -30,32 +28,9 @@ public:
 
     questions(int question_id, int parent_question_id, int from_user_id, const string &question_text, bool is_anonymous, bool is_answered);
 
-    int from_id_getter() const;
-
-    int question_id_getter() const;
+    void display() override;
 
     int parent_question_id_getter() const;
 
-    string question_text_getter() const;
-
-    bool is_anonymous_getter() const;
-
     bool is_answered_getter() const;
-
-    /*operators overloading
-    here operators will be overloaded to make it simpler for filtering and search functions to
-    compare data instead of making lambdas in every single one of them as a comparator
-    */
-
-    bool operator<(const questions &other) const;
-
-    bool operator==(const questions &other) const;
 };
-
-/*
-the output stream operator overload function shouldnt be a member function
-meaning it shouldnt be a part of any class since the function itself belong to the ostream class which
-we wont modify so we will keep it outside of this class  
-*/
-
-ostream& operator<<(ostream& os, const questions& q);
