@@ -17,7 +17,7 @@ class questions : public post
    */
 
 private:
-    int parent_question_id;
+    int parent_question_id = -1;
 
     bool is_answered;
 

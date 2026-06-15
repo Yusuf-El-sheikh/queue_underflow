@@ -22,7 +22,7 @@ public:
     to tell how it will behave, whether its a quetion or an answer, it also forbids the base class object from being created 
     since its now an abstracted class*/
 
-    virtual void display() = 0 ;
+    virtual void display() = 0 ;//pure virtual MUST IMPLEMENT
 
     int id_getter() const ;
     int from_user_id_getter() const ;
