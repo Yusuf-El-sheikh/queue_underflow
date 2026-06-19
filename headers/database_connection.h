@@ -1,4 +1,5 @@
 #include <string>
+#include <memory>
 #include "exceptions.h"
 #include "sqlite3.h"
 
@@ -22,7 +23,9 @@ private:
     , you dont actually use it by yourself you just put it in sqlite3 functions as
     a parameter and they just do the job.*/
 
-    static connection *instance; // our singular instance variable
+    static unique_ptr<connection> instance; /* our singular instance variable, i chose to make it a smart pointer for the following
+    reasons : its static, meaning that the variable terminates at the end of the life cycle of the app, which perfectly fits what this
+    app done */
 
     connection(const string &path)
     {
@@ -35,15 +38,15 @@ private:
     }
 
 public:
-    static connection *make_instance(const string &path) // the core of singlton method i mentioned
+    static connection* make_instance(const string &path) // the core of singlton method i mentioned
     {
-        if (instance == nullptr)
+        if (instance == nullptr)//if we have no connection, then make a new one
         {
-            instance = new connection(path);
-            return instance;
+            instance = make_unique<connection>(path);
+            return instance.get();
         }
-
-        return instance;
+        //else return our existing instance
+        return instance.get();
     }
 
     sqlite3 *handle_getter() const // here we can access our connection handle so we cann pass it to DAO's
@@ -51,8 +54,14 @@ public:
         return connection_handle;
     }
 
+    /*
+    for the sake of singleton we will delete the following constructors and operators since our raw data 
+    -the database connection pointer- cant be copied or assigned since we can only have only one connetion established
+    */ 
     connection(const connection &) = delete;            // here we delete the default copy constructors
     connection &operator=(const connection &) = delete; // and here we delete the default assignment operator
+    connection(connection &&) = delete;
+    connection &operator=(connection &&) = delete;
 
     ~connection() // here we close the connection
     {
