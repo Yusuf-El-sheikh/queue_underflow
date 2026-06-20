@@ -24,12 +24,12 @@ public:
 
     virtual void display() = 0 ;//pure virtual MUST IMPLEMENT
 
-    int id_getter() const ;
-    int from_user_id_getter() const ;
+    [[nodiscard]] int id_getter() const ;
+    [[nodiscard]] int from_user_id_getter() const ;
 
-    string text_getter() const;
+    [[nodiscard]] string& text_getter() const;
     
-    bool is_anonymous_getter() const;
+    [[nodiscard]] bool is_anonymous_getter() const;
 
     /*operators overloading
     here operators will be overloaded to make it simpler for filtering and search functions to

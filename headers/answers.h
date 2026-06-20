@@ -27,5 +27,5 @@ public:
 
     void display() override;
 
-    int answered_question_id_getter() const;
+    [[nodiscard]] int answered_question_id_getter() const;
 };

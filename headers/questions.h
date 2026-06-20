@@ -30,7 +30,7 @@ public:
 
     void display() override;
 
-    int parent_question_id_getter() const;
+    [[nodiscard]] int parent_question_id_getter() const;
 
-    bool is_answered_getter() const;
+    [[nodiscard]] bool is_answered_getter() const;
 };

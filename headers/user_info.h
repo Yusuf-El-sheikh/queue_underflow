@@ -29,11 +29,11 @@ public:
 
     user_info(int id, const string& email, const string& password, const string& username);
 
-    string username_getter() const;
+    [[nodiscard]] string& username_getter() const;
 
-    string user_email_getter() const;
+    [[nodiscard]] string& user_email_getter() const;
 
-    int user_id_getter() const;
+    [[nodiscard]] int user_id_getter() const;
 
     /*operators overloading
     here operators will be overloaded to make it simpler for filtering and search functions to

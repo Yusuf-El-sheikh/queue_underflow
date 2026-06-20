@@ -38,7 +38,7 @@ private:
     }
 
 public:
-    static connection* make_instance(const string &path) // the core of singlton method i mentioned
+    [[nodiscard]]static connection* make_instance(const string &path) // the core of singlton method i mentioned
     {
         if (instance == nullptr)//if we have no connection, then make a new one
         {
