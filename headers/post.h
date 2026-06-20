@@ -27,7 +27,7 @@ public:
     [[nodiscard]] int id_getter() const ;
     [[nodiscard]] int from_user_id_getter() const ;
 
-    [[nodiscard]] string& text_getter() const;
+    [[nodiscard]] const string& text_getter() const;
     
     [[nodiscard]] bool is_anonymous_getter() const;
 

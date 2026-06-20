@@ -29,20 +29,11 @@ public:
 
     user_info(int id, const string& email, const string& password, const string& username);
 
-    [[nodiscard]] string& username_getter() const;
+    [[nodiscard]] const string& username_getter() const;
 
-    [[nodiscard]] string& user_email_getter() const;
+    [[nodiscard]] const string& user_email_getter() const;
 
     [[nodiscard]] int user_id_getter() const;
-
-    /*operators overloading
-    here operators will be overloaded to make it simpler for filtering and search functions to
-    compare data instead of making lambdas in every single one of them as a comparator
-    */
-
-    bool operator<(const user_info &other) const;
-
-    bool operator==(const user_info &other) const;
 };
 
 /*
