@@ -7,6 +7,7 @@
             "command": "g++",
             "args": [
                 "-I./headers",
+                "-I./lib",
                 "-g",
                 "main/main.cpp",
                 "main/main_system.cpp",
@@ -18,9 +19,11 @@
                 "managers/answers_related_managers/answers_manager.cpp",
                 "answer_class/answers.cpp",
                 "managers/answers_related_managers/answer_vote_manager.cpp",
+                "lib/sqlite3.c",
                 "-o",
                 "queue_underflow"
-            ],
+            ]
+            ,
             "group": {
                 "kind": "build",
                 "isDefault": true

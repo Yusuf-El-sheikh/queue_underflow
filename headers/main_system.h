@@ -15,12 +15,12 @@ private:
     
     answers_manager answers_mgr ;
 
-    void display_main_menu();
+    void display_main_menu(); 
     void handle_login();
     void handle_signup();
 
     void display_user_dashboard();
-    void display_feed();
+    void display_feed(); // here is questions
 
     void handle_ask_question();
     void handle_view_my_questions();
@@ -28,7 +28,7 @@ private:
     void handle_delete_question();
     void handle_vote_on_question();
 
-    void handle_answer_question();
+    void handle_answer_question(); //here answers
     void handle_view_question_with_answers();
     void handle_delete_answer();
     void handle_vote_on_answer();

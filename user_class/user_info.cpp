@@ -1,61 +1,28 @@
-#include <bits/stdc++.h>
 #include "../headers/user_info.h"
 using namespace std;
 
-user_info::user_info() {}
+user_info::user_info(int id, const string &email, const string &password, const string &username)
+    : user_id(id), user_email(email), user_password(password), username(username) {}
 
-bool user_info::username_setter(const string &name)
-{
-    username = name;
-
-    return true;
-}
-
-string user_info::username_getter() const
+const string& user_info::username_getter() const
 {
     return username;
 }
 
-void user_info::user_email_setter(const string &email)
-{
-    user_email = email;
-}
-
-string user_info::user_email_getter() const
+const string& user_info::user_email_getter() const
 {
     return user_email;
-}
-
-void user_info::user_password_setter(const string &password)
-{
-    user_password = password;
-}
-
-string user_info::user_password_getter() const
-{
-    return user_password;
-}
-
-bool user_info::preference_setter(const bool &pref)
-{
-    preference = pref;
-
-    return true;
-}
-
-bool user_info::preference_getter() const
-{
-    return preference;
-}
-
-bool user_info::user_id_setter(const int &id)
-{
-    user_id = id;
-
-    return true;
 }
 
 int user_info::user_id_getter() const
 {
     return user_id;
+}
+
+ostream& operator<<(ostream &os, const user_info &others)
+{
+    os << "User ID: " << others.user_id_getter() << endl;
+    os << "Username: " << others.username_getter() << endl;
+    os << "Email: " << others.user_email_getter() << endl;
+    return os;
 }
