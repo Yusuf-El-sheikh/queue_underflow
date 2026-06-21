@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <iostream>
 #include "../headers/questions.h"
 using namespace std;
 
@@ -19,13 +19,13 @@ bool questions::is_answered_getter() const
 
 void questions::display()
 {
-    cout << "Question ID: " << id << endl;
+    cout << "Question ID: " << id_getter() << endl;
     if (parent_question_id != -1)
     {
-        cout << "Parent Question ID: " << parent_question_id << endl;
+        cout << "Parent Question ID: " << parent_question_id_getter() << endl;
     }
-    cout << "From User ID: " << from_user_id << endl;
-    cout << "Text: " << text << endl;
-    cout << "Is Anonymous: " << (is_anonymous ? "Yes" : "No") << endl;
-    cout << "Is Answered: " << (is_answered ? "Yes" : "No") << endl;
+    cout << "From User ID: " << from_user_id_getter() << endl;
+    cout << "Text: " << text_getter() << endl;
+    cout << "Is Anonymous: " << (is_anonymous_getter() ? "Yes" : "No") << endl;
+    cout << "Is Answered: " << (is_answered_getter() ? "Yes" : "No") << endl;
 }

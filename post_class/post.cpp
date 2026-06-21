@@ -19,7 +19,7 @@ int post::from_user_id_getter() const
     return from_user_id;
 }
 
-string post::text_getter() const
+const string& post::text_getter() const
 {
     return text;
 }

@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <iostream>
 #include "../headers/answers.h"
 using namespace std;
 
@@ -14,9 +14,9 @@ int answers::answered_question_id_getter() const
 
 void answers::display()
 {
-    cout << "Answer ID: " << this->id << endl;
-    cout << "Answered Question ID: " << this->answered_question_id << endl;
-    cout << "From User ID: " << this->from_user_id << endl;
-    cout << "Text: " << this->text << endl;
-    cout << "Is Anonymous: " << (this->is_anonymous ? "Yes" : "No") << endl;
+    cout << "Answer ID: " << id_getter() << endl;
+    cout << "Answered Question ID: " << answered_question_id_getter() << endl;
+    cout << "From User ID: " << from_user_id_getter() << endl;
+    cout << "Text: " << text_getter() << endl;
+    cout << "Is Anonymous: " << (is_anonymous_getter() ? "Yes" : "No") << endl;
 }
