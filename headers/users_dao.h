@@ -13,9 +13,9 @@ public:
     [[nodiscard]] unique_ptr<user_info> find_by_id(int id) override;
     [[nodiscard]] unique_ptr<user_info> find_by_email(const string &email) override;
 
-    vector<user_info> find_all() override;//stopped here
+    vector<user_info> find_all() override;
 
-    void save(const user_info &object) override;
+    void create_user(const string &username, const string &email, const string &password) override;
     void remove(const int id) override;
 
     [[nodiscard]] bool validate_credentials(const string &email, const string &password) override;

@@ -15,5 +15,7 @@ public:
     [[nodiscard]] virtual unique_ptr<user_info> find_by_email(const string &email) = 0;
     [[nodiscard]] virtual bool validate_credentials(const string &email, const string &password) = 0;
 
+    virtual void create_user(const string &username, const string &email, const string &password) = 0;
+
     virtual ~IUserRepository() = default ; 
 };
