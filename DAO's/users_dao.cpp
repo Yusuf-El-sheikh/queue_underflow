@@ -1,5 +1,4 @@
 #include "../headers/users_dao.h"
-#include "../headers/database_connection.h"
 #include "../headers/exceptions.h"
 
 users_dao::users_dao(connection *db_connection) : db_connection(db_connection) {}

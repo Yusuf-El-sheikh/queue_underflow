@@ -1,5 +1,4 @@
 #include "../headers/questions_dao.h"
-#include "../headers/database_connection.h"
 #include "../headers/exceptions.h"
 
 questions_dao::questions_dao(connection *db_connection) : db_connection(db_connection) {}
