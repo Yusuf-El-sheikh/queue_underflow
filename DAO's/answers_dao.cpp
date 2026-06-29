@@ -126,7 +126,7 @@ void answers_dao::save(const answers &object)
     sqlite3_bind_int(stmt, 1, object.answered_question_id_getter());
     sqlite3_bind_int(stmt, 2, object.from_user_id_getter());
 
-    sqlite3_bind_text(stmt, 3, object.text_getter().c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 3, object.text_getter().c_str(), -1, SQLITE_TRANSIENT);
 
     sqlite3_bind_int(stmt, 4, object.is_anonymous_getter());
 
