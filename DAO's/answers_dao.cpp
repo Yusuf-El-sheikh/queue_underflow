@@ -109,3 +109,58 @@ vector<answers> answers_dao::find_all()
 
     return all_answers;
 }
+
+void answers_dao::save(const answers &object)
+{
+    sqlite3_stmt *stmt;
+
+    const char *save_query = "INSERT INTO answers (answered_question_id, from_user_id, answer_text, is_anonymous) VALUES (?, ?, ?, ?)";
+
+    int operation_code = sqlite3_prepare_v2(db_connection->handle_getter(), save_query, -1, &stmt, nullptr);
+
+    if (operation_code != SQLITE_OK)
+    {
+        throw database_exception(sqlite3_errmsg(db_connection->handle_getter()));
+    }
+
+    sqlite3_bind_int(stmt, 1, object.answered_question_id_getter());
+    sqlite3_bind_int(stmt, 2, object.from_user_id_getter());
+
+    sqlite3_bind_text(stmt, 3, object.text_getter().c_str(), -1, SQLITE_STATIC);
+
+    sqlite3_bind_int(stmt, 4, object.is_anonymous_getter());
+
+    if(sqlite3_step(stmt) != SQLITE_DONE)
+    {
+        sqlite3_finalize(stmt);
+
+        throw database_exception(sqlite3_errmsg(db_connection->handle_getter()));
+    }
+
+    sqlite3_finalize(stmt);
+}
+
+void answers_dao::remove(const int id)
+{
+    sqlite3_stmt *stmt;
+
+    const char *remove_query = "DELETE FROM answers WHERE answer_id = ?";
+
+    int operation_code = sqlite3_prepare_v2(db_connection->handle_getter(), remove_query, -1, &stmt, nullptr);
+
+    if (operation_code != SQLITE_OK)
+    {
+        throw database_exception(sqlite3_errmsg(db_connection->handle_getter()));
+    }
+
+    sqlite3_bind_int(stmt, 1, id);
+
+    if(sqlite3_step(stmt) != SQLITE_DONE)
+    {
+        sqlite3_finalize(stmt);
+
+        throw database_exception(sqlite3_errmsg(db_connection->handle_getter()));
+    }
+
+    sqlite3_finalize(stmt);
+}
