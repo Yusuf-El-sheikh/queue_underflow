@@ -1,264 +1,31 @@
-#include <bits/stdc++.h>
-#include "../../headers/question_vote_manager.h"
-#include "../../headers/questions_manager.h"
-#include "../../headers/user_manager.h"
-using namespace std;
+#include "../headers/questions_manager.h"
 
-questions_manager::questions_manager()
+questions_manager::questions_manager(unique_ptr<IQuestionRepository> repo) : questions_repo(std::move(repo)) {}
+
+void questions_manager::post_question(int from_user_id, const string &text , bool is_anonymous, int parent_question_id = -1)
 {
-    questions_loader();
+    /*gotta fix up the questions and answers dao by changing the fact that it takes an object of each type
+    so it can save, which is incompatible due to the fact that i cant just build a quiestion by assigning its id
+    which gets me stuck into a loop where i cant make an object to call save and cant call save cuz i need an object*/
 }
 
-void questions_manager::questions_loader()
+void questions_manager::delete_question(int question_id)
 {
-    questions question;
-
-    fstream questions_file("Data\\questions_file");
-
-    if (!questions_file.is_open())
-    {
-        throw "ERROR , file does not exist! \n";
-    }
-
-    string question_data;
-    string questions_lines_of_text = "";
-
-    char next_char;
-
-    while (getline(questions_file, question_data))
-    {
-        int to_int_parent_id = stoi(question_data);
-        question.parent_question_id_setter(to_int_parent_id);
-
-        getline(questions_file, question_data);
-
-        int to_int_question_id = stoi(question_data);
-        question.question_id_setter(to_int_question_id);
-
-        getline(questions_file, question_data);
-
-        int to_int_from_id = stoi(question_data);
-        question.from_id_setter(to_int_from_id);
-
-        getline(questions_file, question_data);
-
-        bool pref = (question_data == "1" || question_data == "true");
-        question.is_anonymous_setter(pref);
-
-        getline(questions_file, question_data);
-
-        bool answered = (question_data == "1" || question_data == "true");
-        question.is_answered_setter(answered);
-
-        getline(questions_file, question_data);
-
-        int length_of_question_text = stoi(question_data);
-
-        for (int i = 0; i < length_of_question_text; i++)
-        {
-            questions_file.get(next_char);
-            questions_lines_of_text += next_char;
-        }
-        questions_file.ignore();
-        question.question_text_setter(questions_lines_of_text);
-        all_questions.push_back(question);
-        questions_lines_of_text = "";
-    }
-
-    sort(all_questions.begin(), all_questions.end(), [](const questions &a, const questions &b) -> bool
-         { return a.question_id_getter() < b.question_id_getter(); });
-
-    questions_file.close();
+    questions_repo->remove(question_id);
 }
 
-void questions_manager::question_writer()
+vector<questions> questions_manager::get_all_questions()
 {
-    fstream questions_file("Data\\questions_file", ios::out);
-
-    if (!questions_file.is_open())
-    {
-        throw "ERROR , file does not exist! \n";
-    }
-
-    for (auto &question : all_questions)
-    {
-        questions_file << question.parent_question_id_getter() << "\n";
-        questions_file << question.question_id_getter() << "\n";
-        questions_file << question.from_id_getter() << "\n";
-        questions_file << (question.is_anonymous_getter() ? "1" : "0") << "\n";
-        questions_file << (question.is_answered_getter() ? "1" : "0") << "\n";
-        questions_file << question.question_text_getter().size() << "\n";
-        questions_file << question.question_text_getter() << "\n";
-    }
-
-    questions_file.close();
+    return questions_repo->find_all();
 }
 
-void questions_manager::save_votes()
+vector<questions> questions_manager::get_user_questions(int from_user_id)
 {
-    q_vote_manager.vote_writer();
+    return questions_repo->find_by_user_id(from_user_id);
 }
 
-bool questions_manager::can_delete_question(const int &current_user_id, const int &target_question_id)
+unique_ptr<questions> questions_manager::get_question(int question_id)
 {
-    auto it = lower_bound(all_questions.begin(), all_questions.end(), target_question_id, [](const questions &a, const int &id)
-                          { return a.question_id_getter() < id; });
-
-    if (it != all_questions.end() && it->question_id_getter() == target_question_id && it->from_id_getter() == current_user_id)
-    {
-        return true;
-    }
-    else if (it == all_questions.end() || it->question_id_getter() != target_question_id)
-    {
-        cout << "False question id , this question does not exist" << endl;
-        return false;
-    }
-    else if (it->from_id_getter() != current_user_id)
-    {
-        cout << "This question belongs to a different user , u can only delete your own questions" << endl;
-        return false;
-    }
-
-    return false;
+    return questions_repo->find_by_id(question_id) ;
 }
 
-bool questions_manager::force_delete_question(const int &question_id)
-{
-    auto it = lower_bound(all_questions.begin(), all_questions.end(), question_id, 
-                          [](const questions &a, const int &id) { return a.question_id_getter() < id; });
-
-    if (it != all_questions.end() && it->question_id_getter() == question_id)
-    {
-        q_vote_manager.remove_question_votes(question_id);
-        all_questions.erase(it);
-        return true;
-    }
-    
-    return false;
-}
-
-bool questions_manager::upvote_question(const int &user_id, const int &question_id)
-{
-    return q_vote_manager.upvote(user_id , question_id);
-}
-
-bool questions_manager::downvote_question(const int &user_id , const int &question_id)
-{
-    return q_vote_manager.downvote(user_id , question_id);
-}
-
-vector<questions>::const_iterator questions_manager::search_questions_by_id(const int &question_id) const
-{
-    auto it = lower_bound(all_questions.begin(), all_questions.end(), question_id, [](const questions &a, const int &id)
-                          { return a.question_id_getter() < id; });
-
-    if (it == all_questions.end() || it->question_id_getter() != question_id)
-    {
-        return all_questions.end();
-    }
-
-    return it;
-}
-
-vector<questions> questions_manager::questions_of_user_filter(const int &current_user_id)
-{
-    vector<questions> all_user_questions;
-
-    for (const auto &i : all_questions)
-    {
-
-        if (i.from_id_getter() == current_user_id)
-        {
-            all_user_questions.push_back(i);
-        }
-    }
-
-    return all_user_questions;
-}
-
-vector<int> questions_manager::collect_all_descendants(const int &parent_id)
-{
-    vector<int> descendants;
-
-    for (const auto &question : all_questions)
-    {
-        if (question.parent_question_id_getter() == parent_id)
-        {
-            descendants.push_back(question.question_id_getter());
-
-            vector<int> child_descendants;
-
-            child_descendants = collect_all_descendants(question.question_id_getter());
-
-            descendants.insert(descendants.end()
-            , make_move_iterator(child_descendants.begin())
-            , make_move_iterator(child_descendants.end()));
-        }
-    }
-
-    return descendants;
-}
-
-const vector<questions>& questions_manager::get_questions() const 
-{
-    return all_questions;
-}
-
-int questions_manager::id_generator()
-{
-    random_device randomizer;
-
-    mt19937 gen(randomizer());
-    uniform_int_distribution<> dist(10000000, 99999999);
-
-    int question_id = dist(gen);
-
-    for (int i = 0; i < all_questions.size(); i++)
-    {
-        if (all_questions[i].question_id_getter() == question_id)
-        {
-            return id_generator();
-        }
-    }
-
-    return question_id;
-}
-
-int questions_manager::get_upvote_count(const int &question_id)
-{
-    return q_vote_manager.upvote_count_getter(question_id);
-}
-
-int questions_manager::get_downvote_count(const int &question_id)
-{
-    return q_vote_manager.downvote_count_getter(question_id);
-}
-
-bool questions_manager::ask(const int &user_id, const string &user_question_text, bool is_anonymous, int parent_id)
-{
-    questions new_question;
-
-    if (user_question_text.size() > 1000)
-    {
-        cout << "question size limit is only 1000 letter !" << endl;
-        return false;
-    }
-
-    new_question.parent_question_id_setter(parent_id);
-    new_question.is_anonymous_setter(is_anonymous);
-    new_question.is_answered_setter(false);
-    new_question.question_id_setter(id_generator());
-    new_question.question_text_setter(user_question_text);
-    new_question.from_id_setter(user_id);
-
-    q_vote_manager.add_new_question(new_question.question_id_getter());
-
-    auto pos = std::lower_bound(all_questions.begin(), all_questions.end(), new_question, [](const questions &a, const questions &b)
-                                { return a.question_id_getter() < b.question_id_getter(); });
-    all_questions.insert(pos, new_question);
-
-    cout << "Your question was posted successfully ! " << endl;
-    cout << "Refresh the homepage to check your post!" << endl;
-
-    return true;
-}
