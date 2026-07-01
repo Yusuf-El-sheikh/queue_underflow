@@ -12,7 +12,7 @@ public:
     questions_manager(unique_ptr<IQuestionRepository> repo) : questions_repo(std::move(repo)) {};
 
     void post_question(int from_user_id, const string &text, bool is_anonymous, int parent_question_id = -1);
-    void delete_question(int question_id);
+    void delete_question(int question_id, int user_id);
 
     unique_ptr<questions> get_question(int question_id);
 

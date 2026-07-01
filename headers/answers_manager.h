@@ -1,45 +1,20 @@
 #pragma once
-#include <bits/stdc++.h>
-#include "answer_vote_manager.h"
-#include "answers.h"
-using namespace std;
+#include "IAnswerRepository.h"
+#include "validator.h"
+#include "exceptions.h"
 
 class answers_manager
 {
 private:
-    vector<answers> answers_by_question_id; // sorted by question id
-    vector<answers> all_answers;            // sorted by answer id
-    answer_vote_manager a_vote_manager;
+    unique_ptr<IAnswerRepository> answers_repo;
 
 public:
-    answers_manager();
+    answers_manager(unique_ptr<IAnswerRepository> repo) : answers_repo(std::move(repo)) {}
 
-    void answers_loader();
+    void post_answer(int answered_question_id, int from_user_id, const string &answer_text, bool is_anonymous);
+    void delete_answer(int answer_id, int user_id);
 
-    void answer_writer();
-
-    void save_votes();
-
-    bool answer(const int &user_id, const int &question_id, const string &answer_text, bool is_anonymous);
-
-    bool can_delete_answer(const int &current_user_id, const int &target_answer_id);
-
-    bool force_delete_answer(const int &answer_id);
-
-    bool upvote_answer(const int &user_id, const int &answer_id);
-
-    bool downvote_answer(const int &user_id, const int &answer_id);
-
-    vector<answers> answers_of_question_filter(const int &question_id);
-
-    vector<answers>::const_iterator search_answers_by_id(const int &answer_id) const;
-
-    const vector<answers> &get_answers() const;
-
-    int id_generator();
-
-    int get_upvote_count(const int &answer_id) ;
-
-    int get_downvote_count(const int &answer_id) ;
-     
+    vector<answers> get_all_answers();
+    unique_ptr<answers> get_answer(int answer_id);
+    vector<answers> get_answers_by_question(int question_id);
 };

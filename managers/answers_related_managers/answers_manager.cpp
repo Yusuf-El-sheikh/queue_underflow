@@ -1,267 +1,59 @@
-#include <bits/stdc++.h>
-#include "../../headers/answer_vote_manager.h"
-#include "../../headers/answers_manager.h"
-#include "../../headers/answers.h"
-using namespace std;
+#include "../headers/answers_manager.h"
 
-answers_manager::answers_manager()
+answers_manager::answers_manager(unique_ptr<IAnswerRepository> repo) : answers_repo(std::move(repo)) {}
+
+void answers_manager::post_answer(int answered_question_id, int from_user_id, const string &answer_text, bool is_anonymous)
 {
-    answers_loader();
+    /*we wont check the answered question id authenticity here, instead we will rely on the 
+    database referencing better than either coupling the managers or duplicating SQL's*/
+
+    /*we wont check the from user id aswell in here since that will be handeled by the 
+    ui layer fetching the current user using the main function which will be orchestrating
+    all the layers, so it will inject the right data to the managers ("supposedly")*/
+
+    if(!validator::validate_text_size(answer_text, validator::MAX_POST_LENGTH))
+    {
+        throw validation_exception("Your answer is longer than 1000 characters");
+    }
+    
+    answers_repo->post_answer(answered_question_id, from_user_id, answer_text, is_anonymous);
 }
 
-void answers_manager::answers_loader()
+void answers_manager::delete_answer(int answer_id, int user_id)
 {
-    answers answer;
+    unique_ptr<answers> answer = answers_repo->find_by_id(answer_id);
 
-    fstream answers_file("Data\\answers_file");
-
-    if (!answers_file.is_open())
+    if(answer == nullptr)
     {
-        throw "ERROR , file does not exist! \n";
+        throw not_found_exception("This answer doesn't exist");
     }
 
-    string answers_data;
-    string answers_text_lines = "";
-
-    char next_char;
-
-    while (getline(answers_file, answers_data))
+    if(answer->from_user_id_getter() != user_id)
     {
-        int to_int_answered_question_id = stoi(answers_data);
-        answer.answered_question_id_setter(to_int_answered_question_id);
-
-        getline(answers_file, answers_data);
-
-        int to_int_answer_id = stoi(answers_data);
-        answer.answer_id_setter(to_int_answer_id);
-
-        getline(answers_file, answers_data);
-
-        int to_int_from_id = stoi(answers_data);
-        answer.from_id_setter(to_int_from_id);
-
-        getline(answers_file, answers_data);
-
-        int length_of_answer_text = stoi(answers_data);
-
-        getline(answers_file, answers_data);
-
-        bool pref = (answers_data == "1" || answers_data == "true");
-        answer.is_anonymous_setter(pref);
-
-        for (int i = 0; i < length_of_answer_text; i++)
-        {
-            answers_file.get(next_char);
-            answers_text_lines += next_char;
-        }
-        answers_file.ignore();
-        answer.answer_text_setter(answers_text_lines);
-
-        all_answers.push_back(answer);
-        answers_by_question_id.push_back(answer); // for the sake of search speed
-
-        answers_text_lines = "";
+        throw authentication_exception("This answer isnt yours to delete");
     }
 
-    sort(all_answers.begin(), all_answers.end(), [](const answers &a, const answers &b) -> bool
-         { return a.answer_id_getter() < b.answer_id_getter(); });
-
-    sort(answers_by_question_id.begin(), answers_by_question_id.end(), [](const answers &a, const answers &b) -> bool
-         { return a.answered_question_id_getter() < b.answered_question_id_getter(); });
-
-    answers_file.close();
+    answers_repo->remove(answer_id);
 }
 
-void answers_manager::answer_writer()
+unique_ptr<answers> answers_manager::get_answer(int answer_id)
 {
-    fstream answers_file("Data\\answers_file", ios::out);
+    unique_ptr<answers> answer = answers_repo->find_by_id(answer_id);
 
-    if (!answers_file.is_open())
+    if(answer == nullptr)
     {
-        throw "ERROR , file does not exist! \n";
+        throw not_found_exception("This answer doesn't exist");
     }
 
-    for (auto &answer : all_answers)
-    {
-        answers_file << answer.answered_question_id_getter() << "\n";
-        answers_file << answer.answer_id_getter() << "\n";
-        answers_file << answer.from_id_getter() << "\n";
-        answers_file << answer.answer_text_getter().size() << "\n";
-        answers_file << (answer.is_anonymous_getter() ? "1" : "0") << "\n";
-        answers_file << answer.answer_text_getter() << "\n";
-    }
-
-    answers_file.close();
+    return answer;
 }
 
-void answers_manager::save_votes()
+vector<answers> answers_manager::get_all_answers()
 {
-    a_vote_manager.vote_writer();
+    return answers_repo->find_all();
 }
 
-bool answers_manager::can_delete_answer(const int &current_user_id, const int &target_answer_id)
+vector<answers> answers_manager::get_answers_by_question(int question_id)
 {
-    auto it = lower_bound(all_answers.begin(), all_answers.end(), target_answer_id, [](const answers &a, const int &id)
-                          { return a.answer_id_getter() < id; });
-
-    if (it != all_answers.end() && it->answer_id_getter() == target_answer_id && it->from_id_getter() == current_user_id)
-    {
-        return true;
-    }
-    else if (it == all_answers.end() || it->answer_id_getter() != target_answer_id)
-    {
-        cout << "False answer id , this answer does not exist" << endl;
-        return false;
-    }
-    else if (it->from_id_getter() != current_user_id)
-    {
-        cout << "This answer belongs to a different user , u can only delete your own answers" << endl;
-        return false;
-    }
-
-    return false;
-}
-
-bool answers_manager::force_delete_answer(const int &answer_id)
-{
-    auto it = lower_bound(all_answers.begin(), all_answers.end(), answer_id,
-                          [](const answers &a, const int &id)
-                          { return a.answer_id_getter() < id; });
-
-    if (it != all_answers.end() && it->answer_id_getter() == answer_id)
-    {
-
-        const int target_answer_id = it->answer_id_getter();
-        const int target_answer_question_id = it->answered_question_id_getter();
-
-        auto it2 = lower_bound(answers_by_question_id.begin(), answers_by_question_id.end(), target_answer_question_id, [](const answers &a, const int &id)
-                               { return a.answered_question_id_getter() < id; });
-
-        while (it2 != answers_by_question_id.end() && it2->answered_question_id_getter() == target_answer_question_id)
-        {
-            if (it2->answer_id_getter() == target_answer_id)
-            {
-                answers_by_question_id.erase(it2);
-                break;
-            }
-            it2++;
-        }
-        a_vote_manager.remove_answer_votes(answer_id);
-        all_answers.erase(it);
-
-        return true;
-    }
-
-    return false;
-}
-
-bool answers_manager::upvote_answer(const int &user_id, const int &answer_id)
-{
-    return a_vote_manager.upvote(user_id, answer_id);
-}
-
-bool answers_manager::downvote_answer(const int &user_id, const int &answer_id)
-{
-    return a_vote_manager.downvote(user_id, answer_id);
-}
-
-vector<answers>::const_iterator answers_manager::search_answers_by_id(const int &answer_id) const
-{
-    auto it = lower_bound(all_answers.begin(), all_answers.end(), answer_id, [](const answers &a, const int &id)
-                          { return a.answer_id_getter() < id; });
-
-    if (it == all_answers.end() || it->answer_id_getter() != answer_id)
-    {
-        return all_answers.end();
-    }
-
-    return it;
-}
-
-int answers_manager::id_generator()
-{
-    random_device randomizer;
-
-    mt19937 gen(randomizer());
-    uniform_int_distribution<> dist(10000000, 99999999);
-
-    int answer_id = dist(gen);
-
-    for (int i = 0; i < all_answers.size(); i++)
-    {
-        if (all_answers[i].answer_id_getter() == answer_id)
-        {
-            return id_generator();
-        }
-    }
-
-    return answer_id;
-}
-
-int answers_manager::get_upvote_count(const int &answer_id) 
-{
-    return a_vote_manager.upvote_count_getter(answer_id);
-}
-
-int answers_manager::get_downvote_count(const int &answer_id) 
-{
-    return a_vote_manager.downvote_count_getter(answer_id);
-}
-
-vector<answers> answers_manager::answers_of_question_filter(const int &question_id)
-{
-    vector<answers> result;
-
-    auto it = lower_bound(answers_by_question_id.begin(),
-                          answers_by_question_id.end(),
-                          question_id,
-                          [](const answers &a, const int &qid)
-                          { return a.answered_question_id_getter() < qid; });
-
-    while (it != answers_by_question_id.end() &&
-           it->answered_question_id_getter() == question_id)
-    {
-        result.push_back(*it);
-        ++it;
-    }
-
-    return result;
-}
-
-const vector<answers> &answers_manager::get_answers() const
-{
-    return all_answers;
-}
-
-bool answers_manager::answer(const int &user_id, const int &question_id, const string &answer_text, bool is_anonymous)
-{
-    answers new_answer;
-
-    if (answer_text.size() > 1000)
-    {
-        cout << "answer size limit is only 1000 letter !" << endl;
-        return false;
-    }
-
-    new_answer.answered_question_id_setter(question_id);
-    new_answer.is_anonymous_setter(is_anonymous);
-    new_answer.answer_id_setter(id_generator());
-    new_answer.answer_text_setter(answer_text);
-    new_answer.from_id_setter(user_id);
-
-    a_vote_manager.add_new_answer(new_answer.answer_id_getter());
-
-    auto pos = std::lower_bound(all_answers.begin(), all_answers.end(), new_answer, [](const answers &a, const answers &b)
-                                { return a.answer_id_getter() < b.answer_id_getter(); });
-
-    auto pos2 = std::lower_bound(answers_by_question_id.begin(), answers_by_question_id.end(), new_answer, [](const answers &a, const answers &b)
-                                 { return a.answered_question_id_getter() < b.answered_question_id_getter(); });
-
-    all_answers.insert(pos, new_answer);
-    answers_by_question_id.insert(pos2, new_answer);
-
-    cout << "Your answer was posted successfully ! " << endl;
-    cout << "Refresh the homepage to check your answer!" << endl;
-
-    return true;
+    return answers_repo->find_by_question_id(question_id);
 }

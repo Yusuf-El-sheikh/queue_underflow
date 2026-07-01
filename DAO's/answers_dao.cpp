@@ -110,7 +110,7 @@ vector<answers> answers_dao::find_all()
     return all_answers;
 }
 
-void answers_dao::save(const answers &object)
+void answers_dao::post_answer(int answered_question_id, int from_user_id, const string &answer_text, bool is_anonymous)
 {
     sqlite3_stmt *stmt;
 
@@ -123,12 +123,12 @@ void answers_dao::save(const answers &object)
         throw database_exception(sqlite3_errmsg(db_connection->handle_getter()));
     }
 
-    sqlite3_bind_int(stmt, 1, object.answered_question_id_getter());
-    sqlite3_bind_int(stmt, 2, object.from_user_id_getter());
+    sqlite3_bind_int(stmt, 1, answered_question_id);
+    sqlite3_bind_int(stmt, 2, from_user_id);
 
-    sqlite3_bind_text(stmt, 3, object.text_getter().c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, answer_text.c_str(), -1, SQLITE_TRANSIENT);
 
-    sqlite3_bind_int(stmt, 4, object.is_anonymous_getter());
+    sqlite3_bind_int(stmt, 4, is_anonymous);
 
     if(sqlite3_step(stmt) != SQLITE_DONE)
     {

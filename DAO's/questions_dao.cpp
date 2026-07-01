@@ -152,7 +152,7 @@ vector<questions> questions_dao::find_all()
     return all_questions;
 }
 
-void questions_dao::save(const questions &object)
+void questions_dao::post_question(int from_user_id, const string &text, bool is_anonymous, int parent_question_id)
 {
     sqlite3_stmt *stmt;
 
@@ -167,14 +167,14 @@ void questions_dao::save(const questions &object)
         throw database_exception(sqlite3_errmsg(db_connection->handle_getter()));
     }
 
-    sqlite3_bind_int(stmt, 1, object.parent_question_id_getter());
-    sqlite3_bind_int(stmt, 2, object.from_user_id_getter());
+    sqlite3_bind_int(stmt, 1, parent_question_id);
+    sqlite3_bind_int(stmt, 2, from_user_id);
 
-    sqlite3_bind_text(stmt, 3, object.text_getter().c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, text.c_str(), -1, SQLITE_TRANSIENT);
 
-    sqlite3_bind_int(stmt, 4, object.is_anonymous_getter());
+    sqlite3_bind_int(stmt, 4, is_anonymous);
 
-    sqlite3_bind_int(stmt, 5, object.is_answered_getter());
+    sqlite3_bind_int(stmt, 5, false); // Assuming new questions are not answered by default
 
     if (sqlite3_step(stmt) != SQLITE_DONE)
     {

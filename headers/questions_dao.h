@@ -16,7 +16,7 @@ public:
 
     vector<questions> find_all() override;
 
-    void save(const questions &object) override;
+    void post_question(int from_user_id, const string &text, bool is_anonymous, int parent_question_id = -1) override;
     void remove(const int id) override;
 
     ~questions_dao() override = default;

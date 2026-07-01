@@ -15,7 +15,7 @@ public:
 
     vector<answers> find_all() override;
 
-    void save(const answers &object) override;
+    void post_answer(int answered_question_id, int from_user_id, const string &answer_text, bool is_anonymous);
     void remove(const int id) override;
 
     ~answers_dao() override = default;
